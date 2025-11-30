@@ -1,0 +1,28 @@
+name: Publish to Sonatype (Maven Central)
+
+on:
+  workflow_call:
+
+jobs:
+  publish:
+    name: Maven publish (Maven Central)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout project sources
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: ./.github/actions/setup-java
+        with:
+          gpg-private-key: ${{ secrets.GPG_SIGNING_KEY }}
+
+      # NOTE: Maven Central does not support SNAPSHOT deployments now, so we only publish RELEASE versions
+      - name: Publish RELEASE to Sonatype (Maven Central)
+        if: github.ref_type == 'tag'
+        run: mvn -B -s $GITHUB_WORKSPACE/.github/settings/settings.xml clean deploy -Prelease
+        env:
+          CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+          CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+          GPG_SIGNING_PASSPHRASE: ${{ secrets.GPG_SIGNING_PASSPHRASE }}
+          GITHUB_TOKEN: ${{ secrets.CI_GITHUB_TOKEN }}

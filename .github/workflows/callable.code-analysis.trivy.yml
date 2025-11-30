@@ -1,0 +1,44 @@
+name: Trivy Security Scan
+
+on:
+  workflow_call:
+
+jobs:
+  analyze:
+    name: Trivy scan (JVM)
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Java
+        uses: ./.github/actions/setup-java
+
+      - name: Install modules to local repository
+        uses: ./.github/actions/maven-install
+        with:
+          skip-tests: 'true'
+
+      - name: Resolve Maven dependencies
+        run: |
+          mvn dependency:resolve-plugins dependency:resolve
+          mvn dependency:go-offline
+
+      - name: Run Trivy vulnerability scanner in repo mode
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          severity: 'CRITICAL,HIGH'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: 'trivy-results.sarif'

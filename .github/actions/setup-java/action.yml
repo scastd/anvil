@@ -1,0 +1,19 @@
+name: 'Setup Java'
+description: 'Sets up Java 21 (Zulu) with Maven cache and optional GPG signing support'
+
+inputs:
+  gpg-private-key:
+    description: 'GPG private key for signing (optional)'
+    required: false
+    default: ''
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Java 21 (Zulu)
+      uses: actions/setup-java@v5
+      with:
+        distribution: 'zulu'
+        java-version: '21'
+        cache: 'maven'
+        gpg-private-key: ${{ inputs.gpg-private-key }}

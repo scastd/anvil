@@ -1,0 +1,335 @@
+package io.github.anvil.processor;
+
+import io.github.anvil.Schema;
+import io.github.anvil.annotations.Validate;
+import io.github.anvil.annotations.ValidateField;
+import io.github.anvil.exceptions.CannotSetValueException;
+import io.github.anvil.exceptions.NonConstructibleException;
+import io.github.anvil.restriction.RestrictionChecker;
+import io.github.anvil.validation.ValidationError;
+import io.github.anvil.validation.Validator;
+import io.github.anvil.validation.ValidatorRegistry;
+import org.slf4j.Logger;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+/**
+ * Base processor that converts an input representation into a validated {@link Schema} instance.
+ *
+ * <p>Subclasses are responsible for providing concrete ways to extract field values from the
+ * input type {@code IN} and a logger implementation.</p>
+ *
+ * @param <IN> the input type from which field values are read.
+ */
+public abstract class Processor<IN> {
+    private final RestrictionChecker restrictionChecker = new RestrictionChecker();
+    private final ValidatorRegistry validatorRegistry = ValidatorRegistry.getInstance(); // Made a field to avoid repeated calls
+
+    /**
+     * Extracts a boolean field value from the input.
+     *
+     * @param input     the input source.
+     * @param fieldName the name of the field to read.
+     * @return the boolean value for the given field, or {@code null} if not present.
+     */
+    public abstract Boolean getBooleanFieldValue(IN input, String fieldName);
+
+    /**
+     * Extracts a numeric field value of the given type from the input.
+     *
+     * @param input       the input source.
+     * @param numberClass the numeric type expected for the field.
+     * @param fieldName   the name of the field to read.
+     * @return the numeric value for the given field, or {@code null} if not present.
+     */
+    public abstract Number getNumberFieldValue(IN input, Class<?> numberClass, String fieldName);
+
+    /**
+     * Extracts a string field value from the input.
+     *
+     * @param input     the input source.
+     * @param fieldName the name of the field to read.
+     * @return the string value for the given field, or {@code null} if not present.
+     */
+    public abstract String getStringFieldValue(IN input, String fieldName);
+
+    /**
+     * Returns the logger to be used by this processor.
+     *
+     * @return the logger instance.
+     */
+    public abstract Logger getLogger();
+
+    /**
+     * Processes the input into a validated schema instance of the given class.
+     *
+     * <p>The method validates all fields according to their annotations, optionally failing fast,
+     * and finally constructs and populates the target schema instance when there are no errors.</p>
+     *
+     * @param input            the input to read values from.
+     * @param clazz            the schema class to instantiate.
+     * @param validationErrors a mutable list that will be populated with validation errors.
+     * @param <OUT>            the schema subtype to be created.
+     * @return the populated and validated schema instance, or {@code null} if there were validation errors.
+     * @throws ValidationError if fail-fast mode is enabled and a validation error occurs.
+     */
+    public final <OUT extends Schema> OUT process(IN input, Class<OUT> clazz, List<ValidationError> validationErrors) throws ValidationError {
+        this.checkSchema(clazz);
+
+        boolean failFast = this.isFailFast(clazz);
+        Map<Field, Object> fieldsToAssign = new HashMap<>();
+
+        for (Field field : clazz.getDeclaredFields()) {
+            String fieldName = field.getName();
+            Object inputValue = this.inputValue(input, fieldName, field.getType());
+            Object valueToAssign = inputValue;
+
+            for (Annotation annotation : getSortedAnnotations(field)) {
+                Validator validator = this.validatorRegistry.getValidator(annotation.annotationType());
+
+                try {
+                    Object validated = validator.validate(inputValue, fieldName, annotation);
+
+                    if (validated != null) {
+                        valueToAssign = validated; // Keep the last non-null validated input value
+                    }
+                } catch (ValidationError validationError) {
+                    // Special handling for optional fields:
+                    //  - if the field is optional and the input value is null, skip adding the error
+                    //  - otherwise, add the error as usual
+                    // This scenario can occur when the field is not provided in the input.
+                    // If it is provided, the checks will be applied as usual and errors added.
+                    if (isOptionalField(field) && inputValue == null) {
+                        valueToAssign = null;
+                    } else {
+                        validationErrors.add(getOrThrow(validationError, failFast));
+                    }
+                }
+            }
+
+            fieldsToAssign.put(field, valueToAssign);
+        }
+
+        if (!validationErrors.isEmpty()) {
+            return null;
+        }
+
+        OUT instance = createInstanceForClass(clazz);
+
+        instance.preBuild();
+        fieldsToAssign.forEach((field, value) -> setFieldValue(instance, field, value));
+        instance.postBuild();
+
+        return instance;
+    }
+
+    /**
+     * Determines whether a field is optional according to its {@link ValidateField} annotation.
+     *
+     * @param field the field to inspect.
+     * @return {@code true} if the field is marked as not required, {@code false} otherwise.
+     */
+    private static boolean isOptionalField(Field field) {
+        ValidateField validateField = field.getAnnotation(ValidateField.class);
+        return validateField != null && !validateField.required();
+    }
+
+    /**
+     * Returns the annotations for the given field sorted so that {@link ValidateField}
+     * (if present) is processed first.
+     *
+     * @param field the field whose annotations should be sorted.
+     * @return an array of annotations in processing order.
+     */
+    private static Annotation[] getSortedAnnotations(Field field) {
+        return Arrays.stream(field.getAnnotations())
+                     .sorted(Comparator.comparing(a -> a.annotationType() != ValidateField.class))
+                     .toArray(Annotation[]::new);
+    }
+
+    /**
+     * Reads a single character value from the input for the given field name.
+     *
+     * @param input     the input source.
+     * @param fieldName the name of the field to read.
+     * @return the character value.
+     * @throws IllegalArgumentException if the underlying string is not exactly one character long.
+     */
+    private Character getCharacterFieldValue(IN input, String fieldName) {
+        return Optional.ofNullable(getStringFieldValue(input, fieldName))
+                       .filter(s -> s.length() == 1)
+                       .map(s -> s.charAt(0))
+                       .orElseThrow(
+                           () -> new IllegalArgumentException("Expected a single character for field: " + fieldName));
+    }
+
+    /**
+     * Resolves the raw input value for a field based on its declared type.
+     *
+     * @param input     the input source.
+     * @param fieldName the name of the field to read.
+     * @param fieldType the declared type of the field.
+     * @return the resolved value, or {@code null} if the field is not present in the input.
+     */
+    private Object inputValue(IN input, String fieldName, Class<?> fieldType) {
+        try {
+            if (fieldType == Boolean.class || fieldType == boolean.class) {
+                return getBooleanFieldValue(input, fieldName);
+            }
+
+            if (fieldType == Character.class || fieldType == char.class) {
+                return getCharacterFieldValue(input, fieldName);
+            }
+
+            if (isNumericType(fieldType)) {
+                return getNumberFieldValue(input, fieldType, fieldName);
+            }
+
+            return getStringFieldValue(input, fieldName);
+        } catch (NullPointerException e) {
+            return null; // Field not present in input
+        }
+    }
+
+    /**
+     * Creates a new instance of the given schema class using its no-argument constructor.
+     *
+     * @param clazz the schema class to instantiate.
+     * @param <OUT> the schema subtype.
+     * @return a new instance of the given class.
+     * @throws NonConstructibleException if the instance cannot be created.
+     */
+    private <OUT extends Schema> OUT createInstanceForClass(Class<OUT> clazz) {
+        try {
+            return clazz.getDeclaredConstructor().newInstance();
+        } catch (ReflectiveOperationException e) {
+            throw new NonConstructibleException(clazz, e);
+        }
+    }
+
+    /**
+     * Sets the given value on the specified field of the schema instance.
+     *
+     * @param instance the schema instance whose field should be set.
+     * @param field    the field to modify.
+     * @param value    the value to assign to the field.
+     * @param <OUT>    the schema subtype.
+     * @throws CannotSetValueException if the field cannot be updated.
+     */
+    private <OUT extends Schema> void setFieldValue(OUT instance, Field field, Object value) {
+        try {
+            boolean oldAccessible = field.canAccess(instance);
+            field.setAccessible(true);
+            field.set(instance, value);
+            field.setAccessible(oldAccessible);
+        } catch (ReflectiveOperationException e) {
+            throw new CannotSetValueException(field, value, e);
+        }
+    }
+
+    /**
+     * Determines whether the given schema class is configured for fail-fast validation.
+     *
+     * @param clazz the schema class to inspect.
+     * @return {@code true} if fail-fast is enabled, {@code false} otherwise.
+     */
+    private boolean isFailFast(Class<?> clazz) {
+        Validate validateAnnotation = clazz.getAnnotation(Validate.class);
+        return validateAnnotation != null && validateAnnotation.failFast();
+    }
+
+    /**
+     * Ensures that the given class is a valid schema configuration and optionally prints
+     * diagnostic information.
+     *
+     * @param clazz the schema class to check.
+     */
+    private void checkSchema(Class<?> clazz) {
+        Validate validateAnnotation = clazz.getAnnotation(Validate.class);
+
+        if (validateAnnotation == null) {
+            throw new IllegalStateException("Class " + clazz.getName() + " is not annotated with @Validate");
+        }
+
+        if (!validateAnnotation.value()) {
+            throw new IllegalStateException("Validation is disabled for class " + clazz.getName());
+        }
+
+        Field[] declaredFields = clazz.getDeclaredFields();
+        ensureAllFieldsAreAnnotated(declaredFields);
+
+        if (validateAnnotation.printInfo()) {
+            getLogger().info("Class {} is marked for validation.", clazz.getName());
+            printClassInfo(declaredFields);
+        }
+    }
+
+    /**
+     * Ensures that all provided fields are annotated with {@link ValidateField} and
+     * satisfy annotation restrictions.
+     *
+     * @param fields the fields to check.
+     */
+    private void ensureAllFieldsAreAnnotated(Field[] fields) {
+        for (Field field : fields) {
+            if (!field.isAnnotationPresent(ValidateField.class)) {
+                throw new IllegalStateException(
+                    "Field '%s' is not annotated with @ValidateField".formatted(field.getName()));
+            }
+
+            this.restrictionChecker.checkAnnotationRestrictions(field);
+        }
+    }
+
+    /**
+     * Logs information about the declared fields and their annotations.
+     *
+     * @param fields the fields whose information should be logged.
+     */
+    private void printClassInfo(Field[] fields) {
+        Logger logger = getLogger();
+
+        Arrays.stream(fields)
+              .forEachOrdered(field -> {
+                  logger.info("Field: {}", field.getName());
+                  for (var annotation : field.getAnnotations()) {
+                      logger.info("  {}", annotation.annotationType().getName());
+                  }
+              });
+    }
+
+    /**
+     * Either returns the given validation error or throws it when fail-fast is enabled.
+     *
+     * @param validationError the validation error that occurred.
+     * @param failFast        whether fail-fast mode is enabled.
+     * @return the same validation error when not failing fast.
+     * @throws ValidationError if {@code failFast} is {@code true}.
+     */
+    private ValidationError getOrThrow(ValidationError validationError, boolean failFast) throws ValidationError {
+        if (failFast) {
+            throw validationError;
+        }
+
+        return validationError;
+    }
+
+    /**
+     * Determines whether the given type is numeric (a {@link Number} or a primitive
+     * numeric type other than {@code boolean} and {@code char}).
+     *
+     * @param type the type to inspect.
+     * @return {@code true} if the type is numeric, {@code false} otherwise.
+     */
+    private static boolean isNumericType(Class<?> type) {
+        return Number.class.isAssignableFrom(type)
+            || (type.isPrimitive() && type != boolean.class && type != char.class);
+    }
+}
