@@ -56,7 +56,7 @@ Add the following dependencies to your `pom.xml`:
 <dependency>
     <groupId>io.github.scastd</groupId>
     <artifactId>anvil-core</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.6</version>
 </dependency>
 ```
 
@@ -66,7 +66,7 @@ Add the following dependencies to your `pom.xml`:
 <dependency>
     <groupId>io.github.scastd</groupId>
     <artifactId>anvil-processor-gson</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.6</version>
 </dependency>
 ```
 
@@ -76,7 +76,7 @@ Add the following dependencies to your `pom.xml`:
 <dependency>
     <groupId>io.github.scastd</groupId>
     <artifactId>anvil-processor-jackson</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.6</version>
 </dependency>
 ```
 
@@ -87,19 +87,19 @@ Add the following dependencies to your `build.gradle`:
 - Core library
 
 ```groovy
-implementation 'io.github.scastd:anvil-core:0.0.1'
+implementation 'io.github.scastd:anvil-core:0.0.6'
 ```
 
 - For Gson support
 
 ```groovy
-implementation 'io.github.scastd:anvil-processor-gson:0.0.1'
+implementation 'io.github.scastd:anvil-processor-gson:0.0.6'
 ```
 
 - For Jackson support
 
 ```groovy
-implementation 'io.github.scastd:anvil-processor-jackson:0.0.1'
+implementation 'io.github.scastd:anvil-processor-jackson:0.0.6'
 ```
 
 ### Requirements
