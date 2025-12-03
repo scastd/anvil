@@ -84,4 +84,13 @@ public final class ValidatorRegistry {
 
         return validator;
     }
+
+    /**
+     * Registers a new validator for its supported annotation type.
+     *
+     * @param validator the validator instance to register.
+     */
+    public void addValidator(Validator validator) {
+        validators.put(validator.getSupportedAnnotation(), validator);
+    }
 }
