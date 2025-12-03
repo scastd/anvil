@@ -24,14 +24,8 @@ import java.util.Map;
  * <p>This is implemented as a singleton and pre-populated with all built-in validators.</p>
  */
 public final class ValidatorRegistry {
-    private static final Map<Class<? extends Annotation>, Validator> validators = new HashMap<>();
+    private final Map<Class<? extends Annotation>, Validator> validators = new HashMap<>();
     private static final ValidatorRegistry INSTANCE = new ValidatorRegistry();
-
-    static {
-        for (Validator validator : getValidatorsList()) {
-            validators.put(validator.getSupportedAnnotation(), validator);
-        }
-    }
 
     /**
      * Returns the singleton {@link ValidatorRegistry} instance.
@@ -43,7 +37,7 @@ public final class ValidatorRegistry {
     }
 
     private ValidatorRegistry() {
-        // Prevent instantiation
+        this.registerBuiltinValidators();
     }
 
     /**
@@ -51,7 +45,7 @@ public final class ValidatorRegistry {
      *
      * @return an immutable list of validator instances.
      */
-    private static List<Validator> getValidatorsList() {
+    private static List<Validator> getBuiltinValidators() {
         return List.of(
             new BetweenValidator(),
             new EqualValidator(),
@@ -66,6 +60,13 @@ public final class ValidatorRegistry {
             new RegexValidator(),
             new ValidateFieldValidator()
         );
+    }
+
+    /**
+     * Registers all built-in validators in the registry.
+     */
+    private void registerBuiltinValidators() {
+        getBuiltinValidators().forEach(validator -> this.validators.put(validator.getSupportedAnnotation(), validator));
     }
 
     /**
@@ -91,6 +92,6 @@ public final class ValidatorRegistry {
      * @param validator the validator instance to register.
      */
     public void addValidator(Validator validator) {
-        validators.put(validator.getSupportedAnnotation(), validator);
+        this.validators.put(validator.getSupportedAnnotation(), validator);
     }
 }
