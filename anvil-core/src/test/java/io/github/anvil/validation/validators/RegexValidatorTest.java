@@ -18,7 +18,7 @@ class RegexValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class RegexTestSchema extends Schema {
+    static class RegexTestSchema implements Schema {
         @Regex("[a-z]+")
         String lowercaseField;
 

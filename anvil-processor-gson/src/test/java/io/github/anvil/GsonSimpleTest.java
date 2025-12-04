@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 class GsonSimpleTest {
     @Validate
-    public static class A extends Schema {
+    public static class A implements Schema {
         @Equal(10.2f)
         @ValidateField
         Float floatField;

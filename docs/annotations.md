@@ -13,7 +13,7 @@ import io.github.anvil.Schema;
 import io.github.anvil.annotations.Validate;
 
 @Validate
-public class User extends Schema {
+public class User implements Schema {
     // fields...
 }
 ```
@@ -37,7 +37,7 @@ Options:
     printInfo = false,
     failFast = false
 )
-public class User extends Schema {
+public class User implements Schema {
     // fields...
 }
 ```
@@ -51,7 +51,7 @@ Marks a field as part of the validated schema and controls whether it is require
 ```java
 import io.github.anvil.annotations.ValidateField;
 
-public class User extends Schema {
+public class User implements Schema {
     @ValidateField  // required by default
     private String email;
 
@@ -135,7 +135,7 @@ public enum Role {
     GUEST
 }
 
-public class User extends Schema {
+public class User implements Schema {
     @ValidateField
     @EnumValue(Role.class)
     private Role role;

@@ -18,7 +18,7 @@ class EqualValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class EqualTestSchema extends Schema {
+    static class EqualTestSchema implements Schema {
         @Equal(42.0)
         Integer integerField;
 

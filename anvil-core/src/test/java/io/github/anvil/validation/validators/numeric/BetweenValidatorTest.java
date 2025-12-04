@@ -18,7 +18,7 @@ class BetweenValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class BetweenTestSchema extends Schema {
+    static class BetweenTestSchema implements Schema {
         @Between(min = 0.0f, max = 100.0f)
         Integer percentage;
 

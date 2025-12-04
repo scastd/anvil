@@ -19,7 +19,7 @@ class StrEqualValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class StrEqualTestSchema extends Schema {
+    static class StrEqualTestSchema implements Schema {
         @StrEqual("first")
         String caseSensitiveField;
 

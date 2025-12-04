@@ -18,7 +18,7 @@ class GreaterOrEqualValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class GreaterOrEqualTestSchema extends Schema {
+    static class GreaterOrEqualTestSchema implements Schema {
         @GreaterOrEqual(0.0f)
         Integer nonNegative;
 

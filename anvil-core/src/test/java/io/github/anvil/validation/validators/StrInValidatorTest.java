@@ -19,7 +19,7 @@ class StrInValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class StrInTestSchema extends Schema {
+    static class StrInTestSchema implements Schema {
         @StrIn({ "apple", "banana", "orange" })
         String caseSensitiveField;
 

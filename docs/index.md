@@ -99,7 +99,7 @@ Choose the processor that matches your JSON library!
 
 ```java title="User.java"
 @Validate
-public class User extends Schema {
+public class User implements Schema {
     @ValidateField
     private String username;
 

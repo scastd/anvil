@@ -18,7 +18,7 @@ class LessValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class LessTestSchema extends Schema {
+    static class LessTestSchema implements Schema {
         @Less(100.0f)
         Integer score;
 

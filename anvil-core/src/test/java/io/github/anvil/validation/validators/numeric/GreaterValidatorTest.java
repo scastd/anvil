@@ -18,7 +18,7 @@ class GreaterValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class GreaterTestSchema extends Schema {
+    static class GreaterTestSchema implements Schema {
         @Greater(0.0f)
         Integer positive;
 

@@ -18,7 +18,7 @@ class InValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class InTestSchema extends Schema {
+    static class InTestSchema implements Schema {
         @In({ 1, 2, 3 })
         Integer smallNumber;
 

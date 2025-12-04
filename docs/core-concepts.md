@@ -15,7 +15,7 @@ import io.github.anvil.annotations.Validate;
 import io.github.anvil.annotations.ValidateField;
 
 @Validate
-public class User extends Schema {
+public class User implements Schema {
     @ValidateField
     private String username;
 
@@ -102,7 +102,7 @@ Both methods can throw `ValidationError`, which is treated like any other valida
 ```java
 
 @Validate
-public class User extends Schema {
+public class User implements Schema {
     @ValidateField
     private String username;
 

@@ -3,19 +3,19 @@ package io.github.anvil;
 import io.github.anvil.validation.ValidationError;
 
 /**
- * Base class for all Anvil schemas.
+ * Base interface for all Anvil schemas.
  *
- * <p>Subclasses define fields annotated with validation annotations and may override
+ * <p>Subclasses define fields annotated with validation annotations and may implement
  * lifecycle hooks to perform custom initialization or post-processing.</p>
  */
-public abstract class Schema {
+public interface Schema {
 
     /**
      * Hook invoked before the schema fields are populated.
      *
      * @throws ValidationError if pre-build validation fails.
      */
-    public void preBuild() throws ValidationError {
+    default void preBuild() throws ValidationError {
     }
 
     /**
@@ -23,6 +23,6 @@ public abstract class Schema {
      *
      * @throws ValidationError if post-build validation fails.
      */
-    public void postBuild() throws ValidationError {
+    default void postBuild() throws ValidationError {
     }
 }

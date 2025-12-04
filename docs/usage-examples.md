@@ -8,7 +8,7 @@ In this example, we validate a typical user registration payload.
 
 ```java title="UserRegistration.java"
 @Validate
-public class UserRegistration extends Schema {
+public class UserRegistration implements Schema {
     @ValidateField
     private String username;
 
@@ -69,7 +69,7 @@ Here we validate configuration for an API server.
 
 ```java
 @Validate(failFast = true)
-public class ApiConfig extends Schema {
+public class ApiConfig implements Schema {
     @ValidateField
     @StrIn({ "development", "staging", "production" })
     private String environment;

@@ -24,7 +24,7 @@ on `@Validate`:
 ```java
 
 @Validate(failFast = true)
-public class User extends Schema {
+public class User implements Schema {
     @ValidateField
     private String username;
 

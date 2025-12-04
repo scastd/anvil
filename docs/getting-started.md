@@ -31,7 +31,7 @@ import io.github.anvil.annotations.StrIn;
 import io.github.anvil.annotations.numeric.Between;
 
 @Validate
-public class User extends Schema {
+public class User implements Schema {
     @ValidateField
     @StrIn({ "admin", "user", "guest" })
     private String role;

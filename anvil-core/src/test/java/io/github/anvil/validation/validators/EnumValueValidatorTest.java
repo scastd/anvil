@@ -23,7 +23,7 @@ class EnumValueValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class EnumValueTestSchema extends Schema {
+    static class EnumValueTestSchema implements Schema {
         @EnumValue(Color.class)
         String color;
     }

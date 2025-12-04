@@ -18,7 +18,7 @@ class LessOrEqualValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class LessOrEqualTestSchema extends Schema {
+    static class LessOrEqualTestSchema implements Schema {
         @LessOrEqual(100.0f)
         Integer maxScore;
 

@@ -124,7 +124,7 @@ import io.github.anvil.processor.GsonProcessor;
 
 public class Main {
     @Validate
-    public static class User extends Schema {
+    public static class User implements Schema {
         @ValidateField
         @StrIn({ "admin", "user", "guest" })
         String role;
@@ -172,7 +172,7 @@ Applied to a class to enable validation. The class **must** extend `Schema`.
     printInfo = false,  // Print validation info (default: false)
     failFast = false    // Stop on first error (default: false)
 )
-public class MyClass extends Schema {
+public class MyClass implements Schema {
     // fields...
 }
 ```
@@ -367,7 +367,7 @@ Override `preBuild()` and `postBuild()` methods in your schema for custom logic:
 
 ```java
 @Validate
-public class User extends Schema {
+public class User implements Schema {
     @ValidateField
     String password;
 
@@ -393,7 +393,7 @@ The `failFast` option in `@Validate` stops validation on the first error when se
 
 ```java
 @Validate(failFast = true)
-public class MyClass extends Schema {
+public class MyClass implements Schema {
     // Validation will stop at first error
 }
 ```
@@ -404,7 +404,7 @@ Enable debug mode to print validation information before the processing starts:
 
 ```java
 @Validate(printInfo = true)
-public class MyClass extends Schema {
+public class MyClass implements Schema {
     // Will print validation info during processing
 }
 ```

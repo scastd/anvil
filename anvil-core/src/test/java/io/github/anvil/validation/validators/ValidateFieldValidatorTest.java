@@ -18,7 +18,7 @@ class ValidateFieldValidatorTest {
 
     @Validate
     @SuppressWarnings("unused")
-    static class ValidateFieldTestSchema extends Schema {
+    static class ValidateFieldTestSchema implements Schema {
         @ValidateField
         String requiredField;
 
