@@ -38,7 +38,7 @@ You then call `validate(input, YourSchema.class)`:
 1. **Schema introspection**
     - Anvil checks that the class is annotated with `@Validate`.
     - If `value = false`, validation is disabled and an error is thrown.
-   - It verifies that annotation combinations are allowed (e.g. numeric range restrictions).
+    - It verifies that annotation combinations are allowed (e.g. numeric range restrictions).
 
 2. **Input extraction**
     - For each field, the processor reads the value from the input JSON (boolean, number, string, etc.).
