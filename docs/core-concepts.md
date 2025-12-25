@@ -70,6 +70,7 @@ private String email;
 You can make a field optional by annotating it with `@OptionalValue`:
 
 ```java
+
 @OptionalValue
 private String nickname;
 ```
