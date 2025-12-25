@@ -20,30 +20,26 @@ At minimum, you need:
 
 ## 2. Define a schema
 
-Create a class that extends `Schema` and annotate it with `@Validate`. Use `@ValidateField` and other annotations
-to describe the validation rules for each field.
+Create a class that implements `Schema` and annotate it with `@Validate`. Use field-level annotations such as
+`@Regex`, `@StrIn`, numeric annotations, and `@OptionalValue` to describe the validation rules for each field.
 
 ```java
 import io.github.anvil.Schema;
 import io.github.anvil.annotations.Validate;
-import io.github.anvil.annotations.ValidateField;
 import io.github.anvil.annotations.StrIn;
 import io.github.anvil.annotations.numeric.Between;
 
 @Validate
 public class User implements Schema {
-    @ValidateField
     @StrIn({ "admin", "user", "guest" })
     private String role;
 
-    @ValidateField
     @Between(min = 18, max = 120)
     private int age;
 
-    @ValidateField
     private String email;
 
-    @ValidateField(required = false)
+    @OptionalValue
     private String nickname;
 }
 ```

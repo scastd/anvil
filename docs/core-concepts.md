@@ -4,22 +4,19 @@ This page explains how Anvil models validation: schemas, processors, annotations
 
 ## Schemas and the `@Validate` annotation
 
-At the heart of Anvil is the `Schema` base class. Any class you want to validate must:
+At the heart of Anvil is the `Schema` base interface. Any class you want to validate must:
 
-- Extend `Schema`
+- Implement `Schema`
 - Be annotated with `@Validate`
 
 ```java
 import io.github.anvil.Schema;
 import io.github.anvil.annotations.Validate;
-import io.github.anvil.annotations.ValidateField;
 
 @Validate
 public class User implements Schema {
-    @ValidateField
     private String username;
 
-    @ValidateField
     private String email;
 }
 ```
@@ -30,8 +27,8 @@ The `@Validate` annotation controls:
 - `printInfo` - When `true`, Anvil logs validation metadata for the class.
 - `failFast` - When `true`, validation stops on the first error.
 
-Every field in a validated schema **must** be annotated with `@ValidateField`. If a field is missing this annotation,
-Anvil fails fast at startup with an error.
+By default, every field in a validated schema is **required**. If the input is missing a value for a field, Anvil
+emits a validation error. You can mark a field as optional by annotating it with `@OptionalValue`.
 
 ## The validation pipeline
 
@@ -41,7 +38,7 @@ You then call `validate(input, YourSchema.class)`:
 1. **Schema introspection**
     - Anvil checks that the class is annotated with `@Validate`.
     - If `value = false`, validation is disabled and an error is thrown.
-    - It verifies that every field has `@ValidateField` and that annotation combinations are allowed.
+   - It verifies that annotation combinations are allowed (e.g. numeric range restrictions).
 
 2. **Input extraction**
     - For each field, the processor reads the value from the input JSON (boolean, number, string, etc.).
@@ -67,16 +64,13 @@ Under the hood, `Anvil` delegates to the processor and either returns a fully bu
 By default, fields are required:
 
 ```java
-
-@ValidateField  // required = true by default
 private String email;
 ```
 
-You can make a field optional by setting `required = false`:
+You can make a field optional by annotating it with `@OptionalValue`:
 
 ```java
-
-@ValidateField(required = false)
+@OptionalValue
 private String nickname;
 ```
 
@@ -90,26 +84,19 @@ If the optional field **is present**:
 - All attached validators are applied.
 - Any failing constraint still produces a `ValidationError`.
 
-## Pre- and post-build hooks
+## Post-build hook
 
-Schemas can participate in the validation lifecycle by overriding two methods on `Schema`:
+Schemas can participate in the validation lifecycle by overriding the `postBuild()` method on `Schema`:
 
-- `preBuild()` - Called **before** field values are assigned.
 - `postBuild()` - Called **after** field values are assigned.
 
-Both methods can throw `ValidationError`, which is treated like any other validation failure.
+This method can throw `ValidationError`, which is treated like any other validation failure.
 
 ```java
 
 @Validate
 public class User implements Schema {
-    @ValidateField
     private String username;
-
-    @Override
-    public void preBuild() throws ValidationError {
-        // Runs before JSON values are applied
-    }
 
     @Override
     public void postBuild() throws ValidationError {
@@ -120,7 +107,7 @@ public class User implements Schema {
 }
 ```
 
-Use these hooks for cross-field checks or business rules that cannot be expressed with a single-field annotation.
+Use this hook for cross-field checks or business rules that cannot be expressed with a single-field annotation.
 
 ## Error model
 

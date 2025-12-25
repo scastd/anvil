@@ -9,22 +9,18 @@ In this example, we validate a typical user registration payload.
 ```java title="UserRegistration.java"
 @Validate
 public class UserRegistration implements Schema {
-    @ValidateField
     private String username;
 
-    @ValidateField
     @Regex("^.{8,128}$")  // Password must be between 8 and 128 characters
     private String password;
 
-    @ValidateField
     @GreaterOrEqual(18)
     private int age;
 
-    @ValidateField
     @StrIn({ "US", "CA", "GB", "AU" })
     private String countryCode;
 
-    @ValidateField(required = false)
+    @OptionalValue
     private String phoneNumber;
 
     @Override
@@ -70,19 +66,16 @@ Here we validate configuration for an API server.
 ```java
 @Validate(failFast = true)
 public class ApiConfig implements Schema {
-    @ValidateField
     @StrIn({ "development", "staging", "production" })
     private String environment;
 
-    @ValidateField
     @Between(min = 1000, max = 65535)
     private int port;
 
-    @ValidateField
     @GreaterOrEqual(1)
     private int maxConnections;
 
-    @ValidateField(required = false)
+    @OptionalValue
     @Between(min = 1, max = 3600)
     private Integer timeoutSeconds;
 }

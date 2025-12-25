@@ -100,15 +100,12 @@ Choose the processor that matches your JSON library!
 ```java title="User.java"
 @Validate
 public class User implements Schema {
-    @ValidateField
     private String username;
 
     @Between(min = 18, max = 120)
-    @ValidateField
     private Integer age;
 
     @In({"admin", "user", "guest"})
-    @ValidateField
     private String role;
 }
 ```
