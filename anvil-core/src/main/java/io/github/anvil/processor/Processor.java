@@ -1,8 +1,8 @@
 package io.github.anvil.processor;
 
 import io.github.anvil.Schema;
+import io.github.anvil.annotations.OptionalValue;
 import io.github.anvil.annotations.Validate;
-import io.github.anvil.annotations.ValidateField;
 import io.github.anvil.exceptions.CannotSetValueException;
 import io.github.anvil.exceptions.NonConstructibleException;
 import io.github.anvil.restriction.RestrictionChecker;
@@ -12,9 +12,10 @@ import io.github.anvil.validation.ValidatorRegistry;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,7 +92,7 @@ public abstract class Processor<IN> {
             Object inputValue = this.inputValue(input, fieldName, field.getType());
             Object valueToAssign = inputValue;
 
-            for (Annotation annotation : getSortedAnnotations(field)) {
+            for (Annotation annotation : field.getAnnotations()) {
                 Validator validator = this.validatorRegistry.getValidator(annotation.annotationType());
 
                 try {
@@ -121,37 +122,36 @@ public abstract class Processor<IN> {
             return null;
         }
 
-        OUT instance = createInstanceForClass(clazz);
+        OUT constructedObject = this.constructObject(clazz, fieldsToAssign);
+        constructedObject.postBuild();
 
-        instance.preBuild();
-        fieldsToAssign.forEach((field, value) -> setFieldValue(instance, field, value));
-        instance.postBuild();
-
-        return instance;
+        return constructedObject;
     }
 
     /**
-     * Determines whether a field is optional according to its {@link ValidateField} annotation.
+     * Constructs an instance of the given schema class and assigns the provided field values.
+     *
+     * @param <OUT>          the schema subtype.
+     * @param clazz          the schema class to instantiate.
+     * @param fieldsToAssign the field values to assign to the instance.
+     * @return the constructed schema instance.
+     */
+    private <OUT extends Schema> OUT constructObject(Class<OUT> clazz, Map<Field, Object> fieldsToAssign) {
+        if (clazz.isRecord()) {
+            return createInstanceForRecord(clazz, fieldsToAssign);
+        }
+
+        return createInstanceForClass(clazz, fieldsToAssign);
+    }
+
+    /**
+     * Determines whether a field is optional according to its {@link OptionalValue} annotation presence.
      *
      * @param field the field to inspect.
-     * @return {@code true} if the field is marked as not required, {@code false} otherwise.
+     * @return {@code true} if the field is marked as optional, {@code false} otherwise.
      */
     private static boolean isOptionalField(Field field) {
-        ValidateField validateField = field.getAnnotation(ValidateField.class);
-        return validateField != null && !validateField.required();
-    }
-
-    /**
-     * Returns the annotations for the given field sorted so that {@link ValidateField}
-     * (if present) is processed first.
-     *
-     * @param field the field whose annotations should be sorted.
-     * @return an array of annotations in processing order.
-     */
-    private static Annotation[] getSortedAnnotations(Field field) {
-        return Arrays.stream(field.getAnnotations())
-                     .sorted(Comparator.comparing(a -> a.annotationType() != ValidateField.class))
-                     .toArray(Annotation[]::new);
+        return field.getAnnotation(OptionalValue.class) != null;
     }
 
     /**
@@ -199,16 +199,74 @@ public abstract class Processor<IN> {
     }
 
     /**
-     * Creates a new instance of the given schema class using its no-argument constructor.
+     * Creates a new instance of the given schema class, using either a no-argument constructor
+     * plus field assignment or, if unavailable, an all-arguments constructor.
      *
-     * @param clazz the schema class to instantiate.
-     * @param <OUT> the schema subtype.
-     * @return a new instance of the given class.
-     * @throws NonConstructibleException if the instance cannot be created.
+     * @param <OUT>          the schema subtype.
+     * @param clazz          the schema class to instantiate.
+     * @param fieldsToAssign the validated values for each declared field of the schema.
+     * @return a new instance of the given class populated with the provided field values.
+     * @throws NonConstructibleException if no suitable constructor is found or instantiation fails.
      */
-    private <OUT extends Schema> OUT createInstanceForClass(Class<OUT> clazz) {
+    private <OUT extends Schema> OUT createInstanceForClass(Class<OUT> clazz, Map<Field, Object> fieldsToAssign) {
         try {
-            return clazz.getDeclaredConstructor().newInstance();
+            OUT instance;
+            Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
+            Optional<Constructor<?>> noArgsConstructor = Arrays.stream(declaredConstructors)
+                                                               .filter(c -> c.getParameterCount() == 0)
+                                                               .findFirst();
+
+            if (noArgsConstructor.isPresent()) {
+                instance = clazz.getDeclaredConstructor().newInstance();
+                fieldsToAssign.forEach((field, value) -> setFieldValue(instance, field, value));
+            } else {
+                Field[] fields = clazz.getDeclaredFields();
+                Constructor<?> allArgsConstructor = Arrays.stream(declaredConstructors)
+                                                          .filter(c -> c.getParameterCount() == fields.length)
+                                                          .findFirst()
+                                                          .orElseThrow(() -> new NoSuchMethodException(
+                                                              "No suitable constructor found for " + clazz.getName()));
+
+                instance = clazz.getDeclaredConstructor(allArgsConstructor.getParameterTypes())
+                                .newInstance(Arrays.stream(fields).map(fieldsToAssign::get).toArray());
+            }
+
+            return instance;
+        } catch (ReflectiveOperationException e) {
+            throw new NonConstructibleException(clazz, e);
+        }
+    }
+
+    /**
+     * Creates a new instance of the given record-based schema class using its canonical constructor.
+     *
+     * <p>Constructor arguments are resolved by matching record component names to the keys in
+     * {@code fieldsToAssign}. Any component without a matching entry receives {@code null}.</p>
+     *
+     * @param <OUT>          the schema subtype.
+     * @param clazz          the record schema class to instantiate.
+     * @param fieldsToAssign the validated values for each declared field of the schema.
+     * @return a new record instance populated with the provided field values.
+     * @throws NonConstructibleException if the record cannot be instantiated.
+     */
+    private <OUT extends Schema> OUT createInstanceForRecord(Class<OUT> clazz, Map<Field, Object> fieldsToAssign) {
+        try {
+            RecordComponent[] recordComponents = clazz.getRecordComponents();
+            Class<?>[] parameterTypes = Arrays.stream(recordComponents)
+                                              .map(RecordComponent::getType)
+                                              .toArray(Class[]::new);
+
+            Object[] constructorArgs =
+                Arrays.stream(recordComponents)
+                      .map(rc -> fieldsToAssign.entrySet()
+                                               .stream()
+                                               .filter(e -> e.getKey().getName().equals(rc.getName()))
+                                               .findFirst()
+                                               .map(Map.Entry::getValue)
+                                               .orElse(null))
+                      .toArray();
+
+            return clazz.getDeclaredConstructor(parameterTypes).newInstance(constructorArgs);
         } catch (ReflectiveOperationException e) {
             throw new NonConstructibleException(clazz, e);
         }
@@ -263,28 +321,11 @@ public abstract class Processor<IN> {
         }
 
         Field[] declaredFields = clazz.getDeclaredFields();
-        ensureAllFieldsAreAnnotated(declaredFields);
+        Arrays.stream(declaredFields).forEach(this.restrictionChecker::checkAnnotationRestrictions);
 
         if (validateAnnotation.printInfo()) {
             getLogger().info("Class {} is marked for validation.", clazz.getName());
             printClassInfo(declaredFields);
-        }
-    }
-
-    /**
-     * Ensures that all provided fields are annotated with {@link ValidateField} and
-     * satisfy annotation restrictions.
-     *
-     * @param fields the fields to check.
-     */
-    private void ensureAllFieldsAreAnnotated(Field[] fields) {
-        for (Field field : fields) {
-            if (!field.isAnnotationPresent(ValidateField.class)) {
-                throw new IllegalStateException(
-                    "Field '%s' is not annotated with @ValidateField".formatted(field.getName()));
-            }
-
-            this.restrictionChecker.checkAnnotationRestrictions(field);
         }
     }
 
