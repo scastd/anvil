@@ -3,7 +3,6 @@ package io.github.anvil;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.github.anvil.annotations.EnumValue;
 import io.github.anvil.annotations.Validate;
-import io.github.anvil.annotations.ValidateField;
 import io.github.anvil.annotations.numeric.Equal;
 import io.github.anvil.processor.JacksonProcessor;
 import io.github.anvil.validation.validators.StringComparer.StringComparisonStrategy;
@@ -16,23 +15,18 @@ class JacksonSimpleTest {
     @Validate
     public static class A implements Schema {
         @Equal(10.2f)
-        @ValidateField
         Float floatField;
 
         @Equal(10.2d)
-        @ValidateField
         double doubleField;
 
         @Equal(10)
-        @ValidateField
         int intField;
 
         @Equal(10)
-        @ValidateField
         short shortField;
 
         @EnumValue(StringComparisonStrategy.class)
-        @ValidateField
         StringComparisonStrategy stringComparisonStrategy;
     }
 
