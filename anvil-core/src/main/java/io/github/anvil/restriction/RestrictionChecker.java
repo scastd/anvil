@@ -36,19 +36,16 @@ public class RestrictionChecker {
      * @throws FieldViolatesRestrictionsException if a restriction is violated.
      */
     public void checkAnnotationRestrictions(Field field) {
-        for (var restriction : restrictions) {
-            boolean hasAllAnnotations = true;
-
-            for (var annotation : restriction.annotations()) {
-                if (!field.isAnnotationPresent(annotation)) {
-                    hasAllAnnotations = false;
-                    break;
-                }
-            }
+        restrictions.forEach(restriction -> {
+            boolean hasAllAnnotations = restriction.annotations()
+                                                   .stream()
+                                                   .map(field::isAnnotationPresent)
+                                                   .reduce((a, b) -> a && b)
+                                                   .orElse(false);
 
             if (hasAllAnnotations) {
                 throw new FieldViolatesRestrictionsException(field.getName(), restriction);
             }
-        }
+        });
     }
 }

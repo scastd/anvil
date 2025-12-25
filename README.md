@@ -117,7 +117,6 @@ import io.github.anvil.Anvil;
 import io.github.anvil.Schema;
 import io.github.anvil.annotations.StrIn;
 import io.github.anvil.annotations.Validate;
-import io.github.anvil.annotations.ValidateField;
 import io.github.anvil.annotations.numeric.Between;
 import io.github.anvil.exceptions.ValidationException;
 import io.github.anvil.processor.GsonProcessor;
@@ -125,18 +124,15 @@ import io.github.anvil.processor.GsonProcessor;
 public class Main {
     @Validate
     public static class User implements Schema {
-        @ValidateField
         @StrIn({ "admin", "user", "guest" })
         String role;
 
-        @ValidateField
         @Between(min = 18, max = 120)
         int age;
 
-        @ValidateField
         String email;
 
-        @ValidateField(required = false)
+        @OptionalValue
         String nickname;
     }
 
@@ -164,7 +160,7 @@ public class Main {
 
 #### `@Validate`
 
-Applied to a class to enable validation. The class **must** extend `Schema`.
+Applied to a class to enable validation. The class **must** implement `Schema`.
 
 ```java
 @Validate(
@@ -179,15 +175,16 @@ public class MyClass implements Schema {
 
 ### Field Annotations
 
-#### `@ValidateField`
+#### `@OptionalValue`
 
-Applied to fields to specify validation rules. It must be used on all fields within a class annotated with `@Validate`.
+Marks a field as **optional** during validation. By default, fields in a `@Validate`d class are required; annotating a
+field with `@OptionalValue` allows the input to omit that field without producing a validation error.
 
 ```java
-@ValidateField(
-    required = true  // Field is required (default: true)
-)
-String myField;
+String requiredField;
+
+@OptionalValue
+String optionalField;
 ```
 
 #### `@EnumValue`
@@ -195,7 +192,6 @@ String myField;
 Specifies that a field's value must be one of the values defined in a given enum class.
 
 ```java
-@ValidateField
 @EnumValue(TheEnumClass.class)
 TheEnumClass myEnumField;
 ```
@@ -207,7 +203,6 @@ TheEnumClass myEnumField;
 Validates that a string field matches a given regular expression.
 
 ```java
-@ValidateField
 @Regex("^[a-zA-Z0-9_]{3,16}$")
 String username;
 ```
@@ -217,7 +212,6 @@ String username;
 Validates that a string field equals a specific value (case-sensitive by default).
 
 ```java
-@ValidateField
 @StrEqual("ACTIVE")
 String status;
 ```
@@ -227,7 +221,6 @@ String status;
 Validates that a string field is one of the specified values (case-sensitive by default).
 
 ```java
-@ValidateField
 @StrIn({ "PENDING", "ACTIVE", "INACTIVE" })
 String lifecycleState;
 ```
@@ -243,7 +236,6 @@ automatically cast internally as needed).
 Validates that a numeric field equals a specific value.
 
 ```java
-@ValidateField
 @Equal(42.0)
 double answer;
 ```
@@ -253,7 +245,6 @@ double answer;
 Validates that a numeric field is between two values \[min, max).
 
 ```java
-@ValidateField
 @Between(min = 0.0f, max = 100.0f)
 float percentage;
 ```
@@ -263,7 +254,6 @@ float percentage;
 Validates that a numeric field is greater than a specific value.
 
 ```java
-@ValidateField
 @Greater(0.0f)
 float positiveNumber;
 ```
@@ -273,7 +263,6 @@ float positiveNumber;
 Validates that a numeric field is greater than or equal to a specific value.
 
 ```java
-@ValidateField
 @GreaterOrEqual(18.0f)
 float age;
 ```
@@ -283,7 +272,6 @@ float age;
 Validates that a numeric field is less than a specific value.
 
 ```java
-@ValidateField
 @Less(100.0f)
 float maxScore;
 ```
@@ -293,7 +281,6 @@ float maxScore;
 Validates that a numeric field is less than or equal to a specific value.
 
 ```java
-@ValidateField
 @LessOrEqual(10.0f)
 float rating;
 ```
@@ -303,7 +290,6 @@ float rating;
 Validates that a numeric field is one of the specified values.
 
 ```java
-@ValidateField
 @In({ 1.0, 2.0, 3.0 })
 double level;
 ```
@@ -361,20 +347,14 @@ public class CustomProcessor extends Processor<YourInputJsonType> {
 
 ## Advanced Features
 
-### Pre- and Post-build Hooks
+### Post-build Hook
 
-Override `preBuild()` and `postBuild()` methods in your schema for custom logic:
+Override `postBuild()` in your schema for custom logic that runs after field values are assigned:
 
 ```java
 @Validate
 public class User implements Schema {
-    @ValidateField
     String password;
-
-    @Override
-    public void preBuild() {
-        System.out.println("Starting deserialization...");
-    }
 
     @Override
     public void postBuild() throws ValidationError {

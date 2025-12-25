@@ -29,17 +29,14 @@ Java provides two primitive floating-point types for representing decimal number
 @Validate
 class Example {
     // float field → use float annotation values
-    @ValidateField
     @Greater(value = 0.0f)
     @LessOrEqual(value = 100.0f)
     private float temperature;
 
     // double field → use double annotation values
-    @ValidateField
     @Equal(value = 3.14159265359)
     private double pi;
 
-    @ValidateField
     @Between(min = -90.0f, max = 90.0f)
     private float latitude;
 }
@@ -52,12 +49,10 @@ class Example {
 @Validate
 class Example {
     // WRONG: float field with double annotation value (no 'f' suffix)
-    @ValidateField
     @Greater(value = 0.0)  // This is a double literal!
     private float temperature;
 
     // WRONG: double field with explicit float annotation value
-    @ValidateField
     @Equal(value = 3.14f)  // This is a float literal!
     private double pi;
 }
@@ -92,7 +87,6 @@ force conversions that can alter the comparison semantics.
 
 ```java
 
-@ValidateField
 @Equal(value = 1.1)  // This is a double: 1.1000000000000001 (approx in binary)
 private float myValue = 1.1f;  // This is a float: 1.10000002384... (approx in binary)
 // These two values are NOT equal due to different precision representations
@@ -114,14 +108,12 @@ This means:
 
 ```java
 // Scenario 1: Matching types (both float)
-@ValidateField
 @Equal(value = 1.1f)  // float literal
 private float myValue = 1.1f;  // float field
 // During comparison: both values are upcasted to double
 // (double) 1.1f compared to (double) 1.1f → EQUAL (both have same precision loss)
 
 // Scenario 2: Mismatched types (double annotation, float field)
-@ValidateField
 @Equal(value = 1.1)  // double literal: 1.1000000000000001 (approx)
 private float myValue = 1.1f;  // float literal: 1.10000002384... (approx)
 // During comparison: myValue upcasted to double
@@ -147,12 +139,10 @@ relationship. Type mismatches introduce asymmetric precision handling that can b
 @Validate
 class TemperatureSensor {
     // High-precision temperature sensor using double
-    @ValidateField
     @Between(min = -273.15, max = 5000.0)  // double values
     private double kelvinTemperature;
 
     // Low-precision sensor using float
-    @ValidateField
     @Greater(value = 0.0f)  // float value with 'f' suffix
     @Less(value = 50.0f)    // float value with 'f' suffix
     private float celsiusTemperature;

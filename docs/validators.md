@@ -26,7 +26,8 @@ the new value for the field (this allows for transformations such as trimming or
 Anvil ships with validators for all built-in annotations:
 
 - **Field-level**:
-    - `ValidateFieldValidator` - Enforces basic `@ValidateField` behavior (required/optional fields and presence).
+    - `OptionalValueValidator` - Supports the `@OptionalValue` marker annotation; optional behavior is handled by the
+      processor.
 - **String**:
     - `RegexValidator` - Implements `@Regex`.
     - `StrEqualValidator` - Implements `@StrEqual`.
@@ -57,8 +58,7 @@ invoke the corresponding validators.
 For each field:
 
 1. Anvil collects all annotations on the field.
-2. `@ValidateField` is always processed first.
-3. Remaining annotations are processed in a stable order.
+2. Annotations are processed in a stable order.
 
 If any validator throws `ValidationError`:
 

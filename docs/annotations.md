@@ -44,32 +44,21 @@ public class User implements Schema {
 
 ## Field annotations
 
-### `@ValidateField`
+### `@OptionalValue`
 
-Marks a field as part of the validated schema and controls whether it is required.
+Marks a field as **optional** during validation.
+
+By default, all fields in a `@Validate`d schema are required: if the input is missing a value for a field, Anvil
+produces a validation error. Annotating a field with `@OptionalValue` allows the field to be omitted without error.
 
 ```java
-import io.github.anvil.annotations.ValidateField;
-
 public class User implements Schema {
-    @ValidateField  // required by default
-    private String email;
+    private String email; // required by default
 
-    @ValidateField(required = false)
-    private String nickname;
+    @OptionalValue
+    private String nickname; // optional
 }
 ```
-
-Options:
-
-- `required` - When `true`, the field must be present in the input. When `false`, missing input is allowed.
-
-[//]: # (@formatter:off)
-
-!!! warning
-    If a field in a `@Validate` class is missing `@ValidateField`, Anvil fails fast with a configuration error.
-
-[//]: # (@formatter:on)
 
 ## String annotations
 
@@ -81,7 +70,6 @@ Validates that a string matches a regular expression.
 
 ```java
 
-@ValidateField
 @Regex("^[a-zA-Z0-9_]{3,16}$")
 private String username;
 ```
@@ -96,7 +84,6 @@ Validates that a string exactly matches a given value (case-sensitive by default
 
 ```java
 
-@ValidateField
 @StrEqual("ACTIVE")
 private String status;
 ```
@@ -112,7 +99,6 @@ Validates that a string is one of a set of allowed values.
 
 ```java
 
-@ValidateField
 @StrIn({"admin", "user", "guest"})
 private String role;
 ```
@@ -136,7 +122,6 @@ public enum Role {
 }
 
 public class User implements Schema {
-    @ValidateField
     @EnumValue(Role.class)
     private Role role;
 }
@@ -158,7 +143,6 @@ Validates that a numeric field equals a specific value.
 
 ```java
 
-@ValidateField
 @Equal(42.0)
 private double answer;
 ```
@@ -173,7 +157,6 @@ Validates that a numeric field is between two values \[min, max).
 
 ```java
 
-@ValidateField
 @Between(min = 0.0f, max = 100.0f)
 private float percentage;
 ```
@@ -189,7 +172,6 @@ Validates that a numeric field is strictly greater than a value.
 
 ```java
 
-@ValidateField
 @Greater(0.0f)
 private float positiveNumber;
 ```
@@ -204,7 +186,6 @@ Validates that a numeric field is greater than or equal to a value.
 
 ```java
 
-@ValidateField
 @GreaterOrEqual(18.0f)
 private float age;
 ```
@@ -219,7 +200,6 @@ Validates that a numeric field is strictly less than a value.
 
 ```java
 
-@ValidateField
 @Less(100.0f)
 private float maxScore;
 ```
@@ -234,7 +214,6 @@ Validates that a numeric field is less than or equal to a value.
 
 ```java
 
-@ValidateField
 @LessOrEqual(10.0f)
 private float rating;
 ```
@@ -249,7 +228,6 @@ Validates that a numeric field is one of a discrete set of values.
 
 ```java
 
-@ValidateField
 @In({1.0, 2.0, 3.0})
 private double level;
 ```

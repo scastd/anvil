@@ -25,10 +25,8 @@ on `@Validate`:
 
 @Validate(failFast = true)
 public class User implements Schema {
-    @ValidateField
     private String username;
 
-    @ValidateField
     @GreaterOrEqual(18)
     private int age;
 }
@@ -98,14 +96,13 @@ Anvil may also throw other unchecked exceptions in misconfiguration scenarios, f
 
 - A schema class is not annotated with `@Validate` but is passed to `validate(...)`.
 - Validation is explicitly disabled via `@Validate(value = false)`.
-- A schema field is missing `@ValidateField`.
 - A schema has an invalid combination of annotations that violates restrictions.
 - A schema cannot be instantiated because it has no accessible no-args constructor.
 - A processor encounters an unsupported numeric type and throws an `IllegalArgumentException`.
 - There is no registered validator for a given annotation type.
 
 These indicate **programmer errors** rather than user input problems. They should generally be treated as bugs and
-fixed in code (for example by adding `@ValidateField` or adjusting the schema).
+fixed in code (for example by adjusting the schema annotations or validation setup).
 
 In production systems you might still want to log these exceptions and return a generic `500 Internal Server Error`
 to callers, while using monitoring/alerts to detect and fix the underlying configuration issues.
