@@ -14,11 +14,17 @@ import org.slf4j.LoggerFactory;
 public class GsonProcessor extends Processor<JsonObject> {
     private static final Logger logger = LoggerFactory.getLogger(GsonProcessor.class);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Boolean getBooleanFieldValue(JsonObject input, String fieldName) {
         return input.get(fieldName).getAsBoolean();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Number getNumberFieldValue(JsonObject input, Class<?> numberClass, String fieldName) {
         JsonElement element = input.get(fieldName);
@@ -34,11 +40,17 @@ public class GsonProcessor extends Processor<JsonObject> {
         };
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getStringFieldValue(JsonObject input, String fieldName) {
         return input.get(fieldName).getAsString();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Logger getLogger() {
         return logger;

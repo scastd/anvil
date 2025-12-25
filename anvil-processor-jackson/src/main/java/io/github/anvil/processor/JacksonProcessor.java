@@ -14,11 +14,17 @@ import org.slf4j.LoggerFactory;
 public class JacksonProcessor extends Processor<ObjectNode> {
     private static final Logger logger = LoggerFactory.getLogger(JacksonProcessor.class);
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Boolean getBooleanFieldValue(ObjectNode input, String fieldName) {
         return input.get(fieldName).asBoolean();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Number getNumberFieldValue(ObjectNode input, Class<?> numberClass, String fieldName) {
         JsonNode element = input.get(fieldName);
@@ -34,11 +40,17 @@ public class JacksonProcessor extends Processor<ObjectNode> {
         };
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public String getStringFieldValue(ObjectNode input, String fieldName) {
         return input.get(fieldName).asText();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Logger getLogger() {
         return logger;
