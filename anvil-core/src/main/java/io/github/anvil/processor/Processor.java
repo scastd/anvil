@@ -138,10 +138,10 @@ public abstract class Processor<IN> {
      */
     private <OUT extends Schema> OUT constructObject(Class<OUT> clazz, Map<Field, Object> fieldsToAssign) {
         if (clazz.isRecord()) {
-            return createInstanceForRecord(clazz, fieldsToAssign);
+            return createRecordInstance(clazz, fieldsToAssign);
         }
 
-        return createInstanceForClass(clazz, fieldsToAssign);
+        return createClassInstance(clazz, fieldsToAssign);
     }
 
     /**
@@ -208,7 +208,7 @@ public abstract class Processor<IN> {
      * @return a new instance of the given class populated with the provided field values.
      * @throws NonConstructibleException if no suitable constructor is found or instantiation fails.
      */
-    private <OUT extends Schema> OUT createInstanceForClass(Class<OUT> clazz, Map<Field, Object> fieldsToAssign) {
+    private <OUT extends Schema> OUT createClassInstance(Class<OUT> clazz, Map<Field, Object> fieldsToAssign) {
         try {
             OUT instance;
             Constructor<?>[] declaredConstructors = clazz.getDeclaredConstructors();
@@ -249,7 +249,7 @@ public abstract class Processor<IN> {
      * @return a new record instance populated with the provided field values.
      * @throws NonConstructibleException if the record cannot be instantiated.
      */
-    private <OUT extends Schema> OUT createInstanceForRecord(Class<OUT> clazz, Map<Field, Object> fieldsToAssign) {
+    private <OUT extends Schema> OUT createRecordInstance(Class<OUT> clazz, Map<Field, Object> fieldsToAssign) {
         try {
             RecordComponent[] recordComponents = clazz.getRecordComponents();
             Class<?>[] parameterTypes = Arrays.stream(recordComponents)
