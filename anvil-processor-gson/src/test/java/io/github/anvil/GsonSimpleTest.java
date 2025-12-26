@@ -9,8 +9,7 @@ import io.github.anvil.processor.GsonProcessor;
 import org.junit.jupiter.api.Test;
 
 import static io.github.anvil.TestUtils.getJsonObject;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class GsonSimpleTest {
     @Validate
@@ -46,11 +45,11 @@ class GsonSimpleTest {
                                             """);
 
         NoArgsConstructorClass validated = anvil.validate(json, NoArgsConstructorClass.class);
-        assertEquals(10.2f, validated.floatField);
-        assertEquals(10.2d, validated.doubleField);
-        assertEquals(10, validated.intField);
-        assertEquals(10, validated.shortField);
-        assertNull(validated.stringField);
+        assertThat(validated.floatField).isEqualTo(10.2f);
+        assertThat(validated.doubleField).isEqualTo(10.2d);
+        assertThat(validated.intField).isEqualTo(10);
+        assertThat(validated.shortField).isEqualTo((short) 10);
+        assertThat(validated.stringField).isNull();
     }
 
     @Validate
@@ -100,11 +99,11 @@ class GsonSimpleTest {
                                             """);
 
         AllArgsConstructorClass validated = anvil.validate(json, AllArgsConstructorClass.class);
-        assertEquals(10.2f, validated.floatField);
-        assertEquals(10.2d, validated.doubleField);
-        assertEquals(10, validated.intField);
-        assertEquals(10, validated.shortField);
-        assertNull(validated.stringField);
+        assertThat(validated.floatField).isEqualTo(10.2f);
+        assertThat(validated.doubleField).isEqualTo(10.2d);
+        assertThat(validated.intField).isEqualTo(10);
+        assertThat(validated.shortField).isEqualTo((short) 10);
+        assertThat(validated.stringField).isNull();
     }
 
     @Validate
@@ -141,10 +140,10 @@ class GsonSimpleTest {
                                             """);
 
         TestRecord validated = anvil.validate(json, TestRecord.class);
-        assertEquals(10.2f, validated.floatField);
-        assertEquals(10.2d, validated.doubleField);
-        assertEquals(10, validated.intField);
-        assertEquals(10, validated.shortField);
-        assertNull(validated.stringField);
+        assertThat(validated.floatField).isEqualTo(10.2f);
+        assertThat(validated.doubleField).isEqualTo(10.2d);
+        assertThat(validated.intField).isEqualTo(10);
+        assertThat(validated.shortField).isEqualTo((short) 10);
+        assertThat(validated.stringField).isNull();
     }
 }

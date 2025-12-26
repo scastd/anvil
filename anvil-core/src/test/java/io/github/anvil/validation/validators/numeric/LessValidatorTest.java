@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 
 import static io.github.anvil.utils.ReflectionUtils.getFieldAnnotation;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LessValidatorTest {
     private final LessValidator validator = new LessValidator();
@@ -30,45 +29,43 @@ class LessValidatorTest {
     void testValidateValidValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(LessTestSchema.class, "score", Less.class);
         Object returnedValue = this.validator.validate(50, "score", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidEqualValue() {
         Annotation annotation = getFieldAnnotation(LessTestSchema.class, "score", Less.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(100, "score", annotation));
-        assertEquals("Field 'score' must be less than the specified value (100.0).",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(100, "score", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'score' must be less than the specified value (100.0).");
     }
 
     @Test
     void testValidateNonNumericValue() {
         Annotation annotation = getFieldAnnotation(LessTestSchema.class, "score", Less.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("not a number", "score", annotation));
-        assertEquals("Field 'score' is not a number.", error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("not a number", "score", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'score' is not a number.");
     }
 
     @Test
     void testValidateValidDoubleValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(LessTestSchema.class, "value", Less.class);
         Object returnedValue = this.validator.validate(5.0, "value", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidEqualDoubleValue() {
         Annotation annotation = getFieldAnnotation(LessTestSchema.class, "value", Less.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(10.0, "value", annotation));
-        assertEquals("Field 'value' must be less than the specified value (10.0).",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(10.0, "value", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'value' must be less than the specified value (10.0).");
     }
 
     @Test
     void testGetSupportedAnnotation() {
-        assertEquals(Less.class, this.validator.getSupportedAnnotation());
+        assertThat(this.validator.getSupportedAnnotation()).isEqualTo(Less.class);
     }
 }
 

@@ -10,9 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 
 import static io.github.anvil.utils.ReflectionUtils.getFieldAnnotation;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class StrEqualValidatorTest {
     private final StrEqualValidator validator = new StrEqualValidator();
@@ -31,45 +30,41 @@ class StrEqualValidatorTest {
     void testValidateValidValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(StrEqualTestSchema.class, "caseSensitiveField", StrEqual.class);
         Object returnedValue = this.validator.validate("first", "caseSensitiveField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidValueCaseSensitive() {
         Annotation annotation = getFieldAnnotation(StrEqualTestSchema.class, "caseSensitiveField", StrEqual.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("First", "caseSensitiveField",
-                                                                           annotation));
-        assertEquals("Found value 'First' for field 'caseSensitiveField', but expected equal to: 'first'.",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("First", "caseSensitiveField", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Found value 'First' for field 'caseSensitiveField', but expected equal to: 'first'.");
     }
 
     @Test
     void testValidateValidValueCaseInsensitive() throws ValidationError {
         Annotation annotation = getFieldAnnotation(StrEqualTestSchema.class, "caseInsensitiveField", StrEqual.class);
         Object returnedValue = this.validator.validate("second", "caseInsensitiveField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateValidValueCaseInsensitiveMixedCase() throws ValidationError {
         Annotation annotation = getFieldAnnotation(StrEqualTestSchema.class, "caseInsensitiveField", StrEqual.class);
         Object returnedValue = this.validator.validate("SeCOnD", "caseInsensitiveField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidValueCaseInsensitive() {
         Annotation annotation = getFieldAnnotation(StrEqualTestSchema.class, "caseInsensitiveField", StrEqual.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("different", "caseInsensitiveField",
-                                                                           annotation));
-        assertEquals("Found value 'different' for field 'caseInsensitiveField', but expected equal to: 'second'.",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("different", "caseInsensitiveField", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Found value 'different' for field 'caseInsensitiveField', but expected equal to: 'second'.");
     }
 
     @Test
     void testGetSupportedAnnotation() {
-        assertEquals(StrEqual.class, this.validator.getSupportedAnnotation());
+        assertThat(this.validator.getSupportedAnnotation()).isEqualTo(StrEqual.class);
     }
 }

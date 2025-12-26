@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 
 import static io.github.anvil.utils.ReflectionUtils.getFieldAnnotation;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LessOrEqualValidatorTest {
     private final LessOrEqualValidator validator = new LessOrEqualValidator();
@@ -30,59 +29,57 @@ class LessOrEqualValidatorTest {
     void testValidateValidValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "maxScore", LessOrEqual.class);
         Object returnedValue = this.validator.validate(50, "maxScore", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateEqualValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "maxScore", LessOrEqual.class);
         Object returnedValue = this.validator.validate(100, "maxScore", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidValue() {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "maxScore", LessOrEqual.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(150, "maxScore", annotation));
-        assertEquals("Field 'maxScore' must be less than or equal to the specified value (100.0).",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(150, "maxScore", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'maxScore' must be less than or equal to the specified value (100.0).");
     }
 
     @Test
     void testValidateNonNumericValue() {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "maxScore", LessOrEqual.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("not a number", "maxScore", annotation));
-        assertEquals("Field 'maxScore' is not a number.", error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("not a number", "maxScore", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'maxScore' is not a number.");
     }
 
     @Test
     void testValidateValidRatingValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "rating", LessOrEqual.class);
         Object returnedValue = this.validator.validate(3.5, "rating", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateEqualRatingValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "rating", LessOrEqual.class);
         Object returnedValue = this.validator.validate(5.0, "rating", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidRatingValue() {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "rating", LessOrEqual.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(6.0, "rating", annotation));
-        assertEquals("Field 'rating' must be less than or equal to the specified value (5.0).",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(6.0, "rating", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'rating' must be less than or equal to the specified value (5.0).");
     }
 
     @Test
     void testGetSupportedAnnotation() {
-        assertEquals(LessOrEqual.class, this.validator.getSupportedAnnotation());
+        assertThat(this.validator.getSupportedAnnotation()).isEqualTo(LessOrEqual.class);
     }
 }
 

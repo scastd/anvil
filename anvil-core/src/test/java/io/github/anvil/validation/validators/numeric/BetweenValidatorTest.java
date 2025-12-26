@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 
 import static io.github.anvil.utils.ReflectionUtils.getFieldAnnotation;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class BetweenValidatorTest {
     private final BetweenValidator validator = new BetweenValidator();
@@ -30,68 +29,65 @@ class BetweenValidatorTest {
     void testValidateValidValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
         Object returnedValue = this.validator.validate(50, "percentage", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateMinBoundaryInclusive() throws ValidationError {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
         Object returnedValue = this.validator.validate(0, "percentage", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateMaxBoundaryExclusive() {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(100, "percentage", annotation));
-        assertEquals("Field 'percentage' must be between 0.0 and 100.0 (not inclusive), but found 100.0",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(100, "percentage", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'percentage' must be between 0.0 and 100.0 (not inclusive), but found 100.0");
     }
 
     @Test
     void testValidateBelowMin() {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(-1, "percentage", annotation));
-        assertEquals("Field 'percentage' must be between 0.0 and 100.0 (not inclusive), but found -1.0",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(-1, "percentage", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'percentage' must be between 0.0 and 100.0 (not inclusive), but found -1.0");
     }
 
     @Test
     void testValidateAboveMax() {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(150, "percentage", annotation));
-        assertEquals("Field 'percentage' must be between 0.0 and 100.0 (not inclusive), but found 150.0",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(150, "percentage", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'percentage' must be between 0.0 and 100.0 (not inclusive), but found 150.0");
     }
 
     @Test
     void testValidateNonNumericValue() {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("not a number", "percentage", annotation));
-        assertEquals("Field 'percentage' is not a number.", error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("not a number", "percentage", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'percentage' is not a number.");
     }
 
     @Test
     void testValidateValidDoubleValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "temperature", Between.class);
         Object returnedValue = this.validator.validate(5.5, "temperature", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateNegativeValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "temperature", Between.class);
         Object returnedValue = this.validator.validate(-5.0, "temperature", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testGetSupportedAnnotation() {
-        assertEquals(Between.class, this.validator.getSupportedAnnotation());
+        assertThat(this.validator.getSupportedAnnotation()).isEqualTo(Between.class);
     }
 }
 

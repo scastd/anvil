@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 
 import static io.github.anvil.utils.ReflectionUtils.getFieldAnnotation;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class RegexValidatorTest {
     private final RegexValidator validator = new RegexValidator();
@@ -33,62 +32,59 @@ class RegexValidatorTest {
     void testValidateValidValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "lowercaseField", Regex.class);
         Object returnedValue = this.validator.validate("abc", "lowercaseField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidValue() {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "lowercaseField", Regex.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("ABC", "lowercaseField", annotation));
-        assertEquals("Value 'ABC' for field 'lowercaseField' does not match the required pattern: '[a-z]+'.",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("ABC", "lowercaseField", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Value 'ABC' for field 'lowercaseField' does not match the required pattern: '[a-z]+'.");
     }
 
     @Test
     void testValidateNullValue() {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "lowercaseField", Regex.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(null, "lowercaseField", annotation));
-        assertEquals("Value 'null' for field 'lowercaseField' does not match the required pattern: '[a-z]+'.",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(null, "lowercaseField", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Value 'null' for field 'lowercaseField' does not match the required pattern: '[a-z]+'.");
     }
 
     @Test
     void testValidateValidPhoneFormat() throws ValidationError {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "phoneField", Regex.class);
         Object returnedValue = this.validator.validate("123-4567", "phoneField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidPhoneFormat() {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "phoneField", Regex.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("1234567", "phoneField", annotation));
-        assertEquals("Value '1234567' for field 'phoneField' does not match the required pattern: '\\d{3}-\\d{4}'.",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("1234567", "phoneField", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Value '1234567' for field 'phoneField' does not match the required pattern: '\\d{3}-\\d{4}'.");
     }
 
     @Test
     void testValidateValidCapitalizedValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "capitalizedField", Regex.class);
         Object returnedValue = this.validator.validate("Hello", "capitalizedField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidCapitalizedValue() {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "capitalizedField", Regex.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("hello", "capitalizedField", annotation));
-        assertEquals("Value 'hello' for field 'capitalizedField' does not match the required pattern: '^[A-Z][a-z]*$'.",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("hello", "capitalizedField", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage(
+                "Value 'hello' for field 'capitalizedField' does not match the required pattern: '^[A-Z][a-z]*$'.");
     }
 
     @Test
     void testGetSupportedAnnotation() {
-        assertEquals(Regex.class, this.validator.getSupportedAnnotation());
+        assertThat(this.validator.getSupportedAnnotation()).isEqualTo(Regex.class);
     }
 }
 

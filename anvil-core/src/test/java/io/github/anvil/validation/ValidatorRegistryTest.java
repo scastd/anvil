@@ -4,20 +4,17 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.annotation.Annotation;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class ValidatorRegistryTest {
     private final ValidatorRegistry validatorRegistry = ValidatorRegistry.getInstance();
 
     @Test
     void testGetValidatorThrowsWhenNotFound() {
-        IllegalArgumentException exception = assertThrows(
-            IllegalArgumentException.class,
-            () -> validatorRegistry.getValidator(Deprecated.class)
-        );
-
-        assertEquals("No validator found for annotation: java.lang.Deprecated", exception.getMessage());
+        assertThatThrownBy(() -> validatorRegistry.getValidator(Deprecated.class))
+            .isInstanceOf(IllegalArgumentException.class)
+            .hasMessage("No validator found for annotation: java.lang.Deprecated");
     }
 
     @Test
@@ -37,6 +34,6 @@ class ValidatorRegistryTest {
         validatorRegistry.addValidator(validator);
         Validator retrievedValidator = validatorRegistry.getValidator(Deprecated.class);
 
-        assertEquals(validator, retrievedValidator);
+        assertThat(retrievedValidator).isEqualTo(validator);
     }
 }

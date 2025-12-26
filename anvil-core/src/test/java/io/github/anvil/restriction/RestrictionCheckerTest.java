@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class RestrictionCheckerTest {
     private RestrictionChecker restrictionChecker;
@@ -41,14 +40,8 @@ class RestrictionCheckerTest {
     void testCheckAnnotationRestrictionsThrows() {
         Field field = ReflectionUtils.getField(EqualGreaterRestriction.class, "fieldViolates");
 
-        FieldViolatesRestrictionsException exception = assertThrows(
-            FieldViolatesRestrictionsException.class,
-            () -> this.restrictionChecker.checkAnnotationRestrictions(field)
-        );
-
-        assertEquals(
-            "Field 'fieldViolates' violates annotation restrictions: [Equal, Greater]",
-            exception.getMessage()
-        );
+        assertThatThrownBy(() -> this.restrictionChecker.checkAnnotationRestrictions(field))
+            .isInstanceOf(FieldViolatesRestrictionsException.class)
+            .hasMessage("Field 'fieldViolates' violates annotation restrictions: [Equal, Greater]");
     }
 }

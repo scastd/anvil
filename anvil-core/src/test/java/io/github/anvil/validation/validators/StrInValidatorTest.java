@@ -10,9 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 
 import static io.github.anvil.utils.ReflectionUtils.getFieldAnnotation;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class StrInValidatorTest {
     private final StrInValidator validator = new StrInValidator();
@@ -31,44 +30,43 @@ class StrInValidatorTest {
     void testValidateValidValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(StrInTestSchema.class, "caseSensitiveField", StrIn.class);
         Object returnedValue = this.validator.validate("apple", "caseSensitiveField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidValueCaseSensitive() {
         Annotation annotation = getFieldAnnotation(StrInTestSchema.class, "caseSensitiveField", StrIn.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("Apple", "caseSensitiveField", annotation));
-        assertEquals("Field 'caseSensitiveField' with value 'Apple' is not in the allowed set: [apple, banana, orange]",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("Apple", "caseSensitiveField", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage(
+                "Field 'caseSensitiveField' with value 'Apple' is not in the allowed set: [apple, banana, orange]");
     }
 
     @Test
     void testValidateValidValueCaseInsensitive() throws ValidationError {
         Annotation annotation = getFieldAnnotation(StrInTestSchema.class, "caseInsensitiveField", StrIn.class);
         Object returnedValue = this.validator.validate("red", "caseInsensitiveField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateValidValueCaseInsensitiveMixedCase() throws ValidationError {
         Annotation annotation = getFieldAnnotation(StrInTestSchema.class, "caseInsensitiveField", StrIn.class);
         Object returnedValue = this.validator.validate("GreeN", "caseInsensitiveField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidValueCaseInsensitive() {
         Annotation annotation = getFieldAnnotation(StrInTestSchema.class, "caseInsensitiveField", StrIn.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("Yellow", "caseInsensitiveField",
-                                                                           annotation));
-        assertEquals("Field 'caseInsensitiveField' with value 'Yellow' is not in the allowed set: [Red, Green, Blue]",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("Yellow", "caseInsensitiveField", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage(
+                "Field 'caseInsensitiveField' with value 'Yellow' is not in the allowed set: [Red, Green, Blue]");
     }
 
     @Test
     void testGetSupportedAnnotation() {
-        assertEquals(StrIn.class, this.validator.getSupportedAnnotation());
+        assertThat(this.validator.getSupportedAnnotation()).isEqualTo(StrIn.class);
     }
 }

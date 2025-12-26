@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 
 import static io.github.anvil.utils.ReflectionUtils.getFieldAnnotation;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class OptionalValueValidatorTest {
     private final OptionalValueValidator validator = new OptionalValueValidator();
@@ -26,18 +25,18 @@ class OptionalValueValidatorTest {
     void testValidateNullValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(OptionalValueTestSchema.class, "optionalField", OptionalValue.class);
         Object returnedValue = this.validator.validate(null, "optionalField", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateNonNullValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(OptionalValueTestSchema.class, "optionalField", OptionalValue.class);
         Object returnedValue = this.validator.validate("value", "optionalField", annotation);
-        assertEquals("value", returnedValue);
+        assertThat(returnedValue).isEqualTo("value");
     }
 
     @Test
     void testGetSupportedAnnotation() {
-        assertEquals(OptionalValue.class, this.validator.getSupportedAnnotation());
+        assertThat(this.validator.getSupportedAnnotation()).isEqualTo(OptionalValue.class);
     }
 }

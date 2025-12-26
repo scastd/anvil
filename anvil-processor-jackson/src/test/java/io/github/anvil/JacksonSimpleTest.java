@@ -9,7 +9,7 @@ import io.github.anvil.validation.validators.StringComparer.StringComparisonStra
 import org.junit.jupiter.api.Test;
 
 import static io.github.anvil.TestUtils.getObjectNode;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class JacksonSimpleTest {
     @Validate
@@ -45,10 +45,10 @@ class JacksonSimpleTest {
                                             """);
 
         A a = anvil.validate(json, A.class);
-        assertEquals(10.2f, a.floatField);
-        assertEquals(10.2d, a.doubleField);
-        assertEquals(10, a.intField);
-        assertEquals(10, a.shortField);
-        assertEquals(StringComparisonStrategy.CASE_SENSITIVE, a.stringComparisonStrategy);
+        assertThat(a.floatField).isEqualTo(10.2f);
+        assertThat(a.doubleField).isEqualTo(10.2d);
+        assertThat(a.intField).isEqualTo(10);
+        assertThat(a.shortField).isEqualTo((short) 10);
+        assertThat(a.stringComparisonStrategy).isEqualTo(StringComparisonStrategy.CASE_SENSITIVE);
     }
 }

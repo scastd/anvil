@@ -9,9 +9,8 @@ import org.junit.jupiter.api.Test;
 import java.lang.annotation.Annotation;
 
 import static io.github.anvil.utils.ReflectionUtils.getFieldAnnotation;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class GreaterOrEqualValidatorTest {
     private final GreaterOrEqualValidator validator = new GreaterOrEqualValidator();
@@ -30,59 +29,57 @@ class GreaterOrEqualValidatorTest {
     void testValidateValidValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "nonNegative", GreaterOrEqual.class);
         Object returnedValue = this.validator.validate(5, "nonNegative", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateEqualValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "nonNegative", GreaterOrEqual.class);
         Object returnedValue = this.validator.validate(0, "nonNegative", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidValue() {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "nonNegative", GreaterOrEqual.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(-1, "nonNegative", annotation));
-        assertEquals("Field 'nonNegative' must be greater than or equal to the specified value (0.0).",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(-1, "nonNegative", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'nonNegative' must be greater than or equal to the specified value (0.0).");
     }
 
     @Test
     void testValidateNonNumericValue() {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "nonNegative", GreaterOrEqual.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate("not a number", "nonNegative", annotation));
-        assertEquals("Field 'nonNegative' is not a number.", error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate("not a number", "nonNegative", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'nonNegative' is not a number.");
     }
 
     @Test
     void testValidateValidAgeValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "age", GreaterOrEqual.class);
         Object returnedValue = this.validator.validate(25, "age", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateEqualAgeValue() throws ValidationError {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "age", GreaterOrEqual.class);
         Object returnedValue = this.validator.validate(18, "age", annotation);
-        assertNull(returnedValue);
+        assertThat(returnedValue).isNull();
     }
 
     @Test
     void testValidateInvalidAgeValue() {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "age", GreaterOrEqual.class);
-        ValidationError error = assertThrows(ValidationError.class,
-                                             () -> this.validator.validate(17, "age", annotation));
-        assertEquals("Field 'age' must be greater than or equal to the specified value (18.0).",
-                     error.getMessage());
+        assertThatThrownBy(() -> this.validator.validate(17, "age", annotation))
+            .isInstanceOf(ValidationError.class)
+            .hasMessage("Field 'age' must be greater than or equal to the specified value (18.0).");
     }
 
     @Test
     void testGetSupportedAnnotation() {
-        assertEquals(GreaterOrEqual.class, this.validator.getSupportedAnnotation());
+        assertThat(this.validator.getSupportedAnnotation()).isEqualTo(GreaterOrEqual.class);
     }
 }
 
