@@ -78,5 +78,5 @@ jobs:
     uses: ./.github/workflows/callable.publish-docs.yml
     needs: build
     if: |
-      github.ref == 'refs/heads/main'
+      github.ref_type == 'tag'
       && ( github.event_name != 'workflow_dispatch' || inputs.type == 'no release' )
