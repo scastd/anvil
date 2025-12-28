@@ -5,8 +5,10 @@ import io.github.anvil.annotations.OptionalValue;
 import io.github.anvil.annotations.Validate;
 import io.github.anvil.exceptions.CannotSetValueException;
 import io.github.anvil.exceptions.NonConstructibleException;
+import io.github.anvil.exceptions.ValidationException;
 import io.github.anvil.restriction.RestrictionChecker;
 import io.github.anvil.validation.ValidationError;
+import io.github.anvil.validation.ValidationErrors;
 import io.github.anvil.validation.Validator;
 import io.github.anvil.validation.ValidatorRegistry;
 import org.slf4j.Logger;
@@ -17,7 +19,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.RecordComponent;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -74,17 +75,17 @@ public abstract class Processor<IN> {
      * <p>The method validates all fields according to their annotations, optionally failing fast,
      * and finally constructs and populates the target schema instance when there are no errors.</p>
      *
-     * @param input            the input to read values from.
-     * @param clazz            the schema class to instantiate.
-     * @param validationErrors a mutable list that will be populated with validation errors.
-     * @param <OUT>            the schema subtype to be created.
+     * @param input the input to read values from.
+     * @param clazz the schema class to instantiate.
+     * @param <OUT> the schema subtype to be created.
      * @return the populated and validated schema instance, or {@code null} if there were validation errors.
-     * @throws ValidationError if fail-fast mode is enabled and a validation error occurs.
+     * @throws ValidationException if fail-fast mode is enabled and a validation error occurs.
      */
-    public final <OUT extends Schema> OUT process(IN input, Class<OUT> clazz, List<ValidationError> validationErrors) throws ValidationError {
+    public final <OUT extends Schema> OUT process(IN input, Class<OUT> clazz) throws ValidationException {
         this.checkSchema(clazz);
 
         boolean failFast = this.isFailFast(clazz);
+        ValidationErrors validationErrors = new ValidationErrors(failFast);
         Map<Field, Object> fieldsToAssign = new HashMap<>();
 
         for (Field field : clazz.getDeclaredFields()) {
@@ -101,7 +102,7 @@ public abstract class Processor<IN> {
                     if (validated != null) {
                         valueToAssign = validated; // Keep the last non-null validated input value
                     }
-                } catch (ValidationError validationError) {
+                } catch (ValidationError error) {
                     // Special handling for optional fields:
                     //  - if the field is optional and the input value is null, skip adding the error
                     //  - otherwise, add the error as usual
@@ -110,7 +111,7 @@ public abstract class Processor<IN> {
                     if (isOptionalField(field) && inputValue == null) {
                         valueToAssign = null;
                     } else {
-                        validationErrors.add(getOrThrow(validationError, failFast));
+                        validationErrors.addError(error);
                     }
                 }
             }
@@ -118,12 +119,15 @@ public abstract class Processor<IN> {
             fieldsToAssign.put(field, valueToAssign);
         }
 
-        if (!validationErrors.isEmpty()) {
-            return null;
+        OUT constructedObject = this.constructObject(clazz, fieldsToAssign);
+
+        try {
+            constructedObject.postBuild();
+        } catch (ValidationError error) {
+            validationErrors.addError(error);
         }
 
-        OUT constructedObject = this.constructObject(clazz, fieldsToAssign);
-        constructedObject.postBuild();
+        validationErrors.throwIfAny();
 
         return constructedObject;
     }

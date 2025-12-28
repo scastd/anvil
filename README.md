@@ -337,8 +337,7 @@ public class CustomProcessor extends Processor<YourInputJsonType> {
     @Override
     public <T extends Schema> T process(
         YourInputJsonType input,
-        Class<T> clazz,
-        List<ValidationError> errors
+        Class<T> clazz
     ) {
         // Your implementation
     }
