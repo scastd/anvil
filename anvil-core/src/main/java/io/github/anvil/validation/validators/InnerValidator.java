@@ -8,6 +8,7 @@ import io.github.anvil.validation.ValidationError;
 import io.github.anvil.validation.Validator;
 
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 /**
  * Validator implementation for the {@link Inner} annotation.
@@ -47,11 +48,18 @@ public class InnerValidator implements Validator {
      * processor to validate and construct the nested schema. The nested validation follows the
      * same rules as top-level schema validation.</p>
      *
+     * <p>When nested validation fails, all errors are extracted and prefixed with the field path
+     * (e.g., "address.street" instead of just "street") to provide clear context about which
+     * nested field has the error. All nested errors are preserved and thrown as a
+     * {@link ValidationException} (unchecked) so they can all be collected by the processor.</p>
+     *
      * @param value      the nested input value to validate.
      * @param fieldName  the name of the field being validated (used for error messages).
      * @param annotation the {@link Inner} annotation instance.
      * @return the validated and constructed schema instance.
-     * @throws ValidationError if validation of the nested schema fails.
+     * @throws ValidationError     if validation of the nested schema fails (for single errors).
+     * @throws ValidationException if validation of the nested schema fails with multiple errors.
+     *                             The exception contains all nested errors with field paths prefixed.
      */
     @Override
     public Schema validate(Object value, String fieldName, Annotation annotation) throws ValidationError {
@@ -60,10 +68,41 @@ public class InnerValidator implements Validator {
         try {
             return this.processor.processUnchecked(value, schemaClass);
         } catch (ValidationException e) {
-            throw new ValidationError(
-                "Field '%s.%s' failed inner schema validation.".formatted(schemaClass.getSimpleName(), fieldName)
-            );
+            // Extract all nested errors and prefix them with the field path using dot notation
+            // This preserves all nested validation errors and builds the full path from the root
+            // Format: "root.parent.nestedField: error message" for better readability
+            List<ValidationError> prefixedErrors = e.getErrors()
+                                                    .stream()
+                                                    .map(error -> new ValidationError(
+                                                        prefixErrorMessage(error.getMessage(), fieldName)))
+                                                    .toList();
+
+            throw new ValidationException(prefixedErrors);
         }
+    }
+
+    /**
+     * Prefixes an error message with the parent field name to build the full path from the root.
+     *
+     * <p>This method replaces "for field 'fieldName'" with "for field 'parentField.fieldName'"
+     * to show the complete path. It handles both simple field names and already-prefixed paths
+     * (for deeply nested structures).</p>
+     *
+     * @param errorMessage    the original error message.
+     * @param parentFieldName the parent field name to prefix.
+     * @return the error message with the parent field name prefixed.
+     */
+    private String prefixErrorMessage(String errorMessage, String parentFieldName) {
+        String prefixedMessage = errorMessage.replaceFirst(
+            "for field '([^']+)'",
+            "for field '%s.$1'".formatted(parentFieldName)
+        );
+        // If the replacement didn't match (different error message format),
+        // prefix the entire message with the parent field name
+        if (prefixedMessage.equals(errorMessage)) {
+            prefixedMessage = "%s: %s".formatted(parentFieldName, errorMessage);
+        }
+        return prefixedMessage;
     }
 
     /**

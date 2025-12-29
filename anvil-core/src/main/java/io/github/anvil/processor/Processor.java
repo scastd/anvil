@@ -125,6 +125,21 @@ public abstract class Processor<IN> {
                     } else {
                         validationErrors.addError(error);
                     }
+                } catch (ValidationException e) {
+                    // Handle ValidationException from validators (e.g., InnerValidator with nested errors)
+                    // Extract all errors and add them to the collection
+                    // Special handling for optional fields: if the field is optional and the input value is null,
+                    // skip adding the errors (similar to ValidationError handling above)
+                    if (isOptionalField(field) && inputValue == null) {
+                        valueToAssign = null;
+                    } else {
+                        for (ValidationError error : e.getErrors()) {
+                            validationErrors.addError(error);
+                        }
+                        // Don't assign the raw input value if validation failed - set to null to prevent
+                        // passing raw input (e.g., JsonObject) to record/class constructors
+                        valueToAssign = null;
+                    }
                 }
             }
 
