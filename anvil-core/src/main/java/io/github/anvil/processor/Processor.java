@@ -403,22 +403,6 @@ public abstract class Processor<IN> {
     }
 
     /**
-     * Either returns the given validation error or throws it when fail-fast is enabled.
-     *
-     * @param validationError the validation error that occurred.
-     * @param failFast        whether fail-fast mode is enabled.
-     * @return the same validation error when not failing fast.
-     * @throws ValidationError if {@code failFast} is {@code true}.
-     */
-    private ValidationError getOrThrow(ValidationError validationError, boolean failFast) throws ValidationError {
-        if (failFast) {
-            throw validationError;
-        }
-
-        return validationError;
-    }
-
-    /**
      * Determines whether the given type is numeric (a {@link Number} or a primitive
      * numeric type other than {@code boolean} and {@code char}).
      *
