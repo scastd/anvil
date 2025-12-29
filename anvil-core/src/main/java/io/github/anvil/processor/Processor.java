@@ -1,6 +1,7 @@
 package io.github.anvil.processor;
 
 import io.github.anvil.Schema;
+import io.github.anvil.annotations.Inner;
 import io.github.anvil.annotations.OptionalValue;
 import io.github.anvil.annotations.Validate;
 import io.github.anvil.exceptions.CannotSetValueException;
@@ -11,6 +12,7 @@ import io.github.anvil.validation.ValidationError;
 import io.github.anvil.validation.ValidationErrors;
 import io.github.anvil.validation.Validator;
 import io.github.anvil.validation.ValidatorRegistry;
+import io.github.anvil.validation.validators.InnerValidator;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
@@ -33,6 +35,7 @@ import java.util.Optional;
 public abstract class Processor<IN> {
     private final RestrictionChecker restrictionChecker = new RestrictionChecker();
     private final ValidatorRegistry validatorRegistry = ValidatorRegistry.getInstance(); // Made a field to avoid repeated calls
+    private final Validator innerValidator = new InnerValidator(this);
 
     /**
      * Extracts a boolean field value from the input.
@@ -61,6 +64,15 @@ public abstract class Processor<IN> {
      * @return the string value for the given field, or {@code null} if not present.
      */
     public abstract String getStringFieldValue(IN input, String fieldName);
+
+    /**
+     * Extracts a nested input representation for a field marked as an inner schema.
+     *
+     * @param input     the input source.
+     * @param fieldName the name of the field to read.
+     * @return the nested input representation for the given field, or {@code null} if not present.
+     */
+    public abstract IN getInnerInput(IN input, String fieldName);
 
     /**
      * Returns the logger to be used by this processor.
@@ -133,6 +145,21 @@ public abstract class Processor<IN> {
     }
 
     /**
+     * Processes the input into a validated schema instance of the given class.
+     *
+     * <p>This is a type-safe wrapper around {@link #process(Object, Class)}.</p>
+     *
+     * @param value    the input to read values from.
+     * @param outClass the schema class to instantiate.
+     * @return the populated and validated schema instance, or {@code null} if there were validation errors.
+     * @throws ValidationException if fail-fast mode is enabled and a validation error occurs.
+     */
+    @SuppressWarnings("unchecked")
+    public final Schema processUnchecked(Object value, Class<?> outClass) throws ValidationException {
+        return this.process((IN) value, (Class<Schema>) outClass);
+    }
+
+    /**
      * Constructs an instance of the given schema class and assigns the provided field values.
      *
      * @param <OUT>          the schema subtype.
@@ -196,7 +223,11 @@ public abstract class Processor<IN> {
                 return getNumberFieldValue(input, fieldType, fieldName);
             }
 
-            return getStringFieldValue(input, fieldName);
+            if (fieldType == String.class || fieldType.isEnum()) {
+                return getStringFieldValue(input, fieldName);
+            }
+
+            return getInnerInput(input, fieldName);
         } catch (NullPointerException e) {
             return null; // Field not present in input
         }
@@ -325,7 +356,13 @@ public abstract class Processor<IN> {
         }
 
         Field[] declaredFields = clazz.getDeclaredFields();
-        Arrays.stream(declaredFields).forEach(this.restrictionChecker::checkAnnotationRestrictions);
+        Arrays.stream(declaredFields).forEach(field -> {
+            this.restrictionChecker.checkAnnotationRestrictions(field);
+
+            if (field.getAnnotation(Inner.class) != null) {
+                this.validatorRegistry.addNonOverridingValidator(this.innerValidator);
+            }
+        });
 
         if (validateAnnotation.printInfo()) {
             getLogger().info("Class {} is marked for validation.", clazz.getName());
