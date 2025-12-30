@@ -18,6 +18,7 @@ public class ValidationException extends RuntimeException {
      * Creates a new exception from a collection of validation errors.
      *
      * @param validationErrors the collection of validation errors that occurred.
+     * @throws IllegalArgumentException if the collection is empty or null.
      */
     public ValidationException(Collection<ValidationError> validationErrors) {
         super(formatErrors(validationErrors));
@@ -38,8 +39,13 @@ public class ValidationException extends RuntimeException {
      *
      * @param validationErrors the collection of validation errors to format.
      * @return a multi-line message summarizing all validation errors.
+     * @throws IllegalArgumentException if the collection is null or empty.
      */
     private static String formatErrors(Collection<ValidationError> validationErrors) {
+        if (validationErrors == null || validationErrors.isEmpty()) {
+            throw new IllegalArgumentException("ValidationException requires at least one validation error");
+        }
+
         String collect = validationErrors.stream()
                                          .map(ValidationError::getMessage)
                                          .collect(Collectors.joining("\n\t- "));
