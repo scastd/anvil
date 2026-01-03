@@ -48,17 +48,17 @@ You then call `validate(input, YourSchema.class)`:
     - For each field, Anvil collects all annotations (e.g. `@Regex`, `@Between`, `@StrIn`).
     - It looks up a `Validator` implementation for each annotation and runs them in order.
     - Validators can transform the value (e.g. trimming) or throw `ValidationError` on failure.
-   - For fields annotated with `@Inner`, the nested object is validated recursively using the same pipeline.
-     Nested validation errors are automatically prefixed with the field path (e.g., `address.street`).
+    - For fields annotated with `@Inner`, the nested object is validated recursively using the same pipeline.
+      Nested validation errors are automatically prefixed with the field path (e.g., `address.street`).
 
 4. **Error handling and `failFast`**
     - If `failFast = true`, the first `ValidationError` stops processing and is thrown immediately.
     - Otherwise, errors are accumulated and wrapped into a single `ValidationException` at the end.
-   - Nested validation errors preserve the full field path from the root element.
+    - Nested validation errors preserve the full field path from the root element.
 
 5. **Object construction**
     - If there are no errors, Anvil constructs the schema instance, assigns all validated field values, and returns it.
-   - Nested schemas are constructed recursively before being assigned to their parent fields.
+    - Nested schemas are constructed recursively before being assigned to their parent fields.
 
 Under the hood, `Anvil` delegates to the processor and either returns a fully built `User` or throws
 `ValidationException` with all collected `ValidationError` instances.
