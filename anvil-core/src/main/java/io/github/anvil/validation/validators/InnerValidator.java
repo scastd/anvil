@@ -65,6 +65,7 @@ public class InnerValidator implements Validator {
     public Schema validate(Object value, String fieldName, Annotation annotation) throws ValidationError {
         Inner innerAnnotation = (Inner) annotation;
         Class<? extends Schema> schemaClass = innerAnnotation.value();
+
         try {
             return this.processor.processUnchecked(value, schemaClass);
         } catch (ValidationException e) {

@@ -130,16 +130,15 @@ public abstract class Processor<IN> {
                     // Extract all errors and add them to the collection
                     // Special handling for optional fields: if the field is optional and the input value is null,
                     // skip adding the errors (similar to ValidationError handling above)
-                    if (isOptionalField(field) && inputValue == null) {
-                        valueToAssign = null;
-                    } else {
+                    if (!isOptionalField(field) || inputValue != null) {
                         for (ValidationError error : e.getErrors()) {
                             validationErrors.addError(error);
                         }
-                        // Don't assign the raw input value if validation failed - set to null to prevent
-                        // passing raw input (e.g., JsonObject) to record/class constructors
-                        valueToAssign = null;
                     }
+
+                    // Don't assign the raw input value if validation failed - set to null to prevent
+                    // passing raw input (e.g., JsonObject) to record/class constructors
+                    valueToAssign = null;
                 }
             }
 
