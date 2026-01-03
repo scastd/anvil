@@ -90,6 +90,53 @@ try {
 You can adapt this pattern for your framework (Spring, Micronaut, Quarkus, etc.) using global exception handlers or
 filters so you do not repeat the mapping logic in every controller.
 
+## Nested schema error reporting
+
+When validating nested schemas (using `@Inner`), error messages automatically include the full field path from the root
+element. This makes it easy to identify which nested field has the validation error.
+
+### Error path format
+
+Nested errors use dot notation to show the complete path. For example:
+
+```
+Validation failed with 2 error(s):
+	- for field 'user.address.street': Field 'street' must not be empty
+	- for field 'user.address.country.code': Found value 'CAN' for field 'code', but expected equal to: 'USA'
+```
+
+The path `user.address.street` indicates:
+
+- `user` - the root schema field
+- `address` - a nested schema field
+- `street` - the field within the nested schema that failed validation
+
+### Accessing nested errors programmatically
+
+You can access individual errors from a `ValidationException` to extract field paths:
+
+```java
+try {
+    User user = anvil.validate(input, User.class);
+} catch (ValidationException e) {
+    for (ValidationError error : e.getErrors()) {
+        String message = error.getMessage();
+        // Parse the message to extract field path and error details
+        // Example: "for field 'user.address.street': Field 'street' must not be empty"
+    }
+}
+```
+
+### Error path building
+
+Error paths are built recursively as validation proceeds through nested schemas:
+
+1. When a nested schema is validated, any errors it produces are prefixed with the parent field name.
+2. If the nested schema itself contains nested schemas, the path continues to build.
+3. The final error message always shows the complete path from the root element.
+
+This ensures that even deeply nested validation errors are clearly traceable to their location in the input structure.
+
 ## Non-validation exceptions
 
 Anvil may also throw other unchecked exceptions in misconfiguration scenarios, for example:

@@ -20,7 +20,7 @@ public class User implements Schema {
 
 [//]: # (@formatter:off)
 !!! warning
-    The class must extend `Schema`. If it does not, your project will not compile.
+    The class must implement `Schema`. If it does not, your project will not compile.
 
 [//]: # (@formatter:on)
 
@@ -48,7 +48,7 @@ public class User implements Schema {
 
 Marks a field as **optional** during validation.
 
-By default, all fields in a `@Validate`d schema are required: if the input is missing a value for a field, Anvil
+By default, all fields in a schema are **required**: if the input is missing a value for a field, Anvil
 produces a validation error. Annotating a field with `@OptionalValue` allows the field to be omitted without error.
 
 ```java
@@ -59,6 +59,89 @@ public class User implements Schema {
     private String nickname; // optional
 }
 ```
+
+### `@Inner`
+
+Marks a field as containing a nested schema that should be validated independently.
+
+Options:
+
+- `value` - The schema class to use for validating the nested object. Must be a class annotated with `@Validate`
+  that implements `Schema`.
+
+When a field is annotated with `@Inner`, the field's value is extracted from the input as a nested object and validated
+using the schema class specified by the annotation's `value`. The nested validation follows the same rules as
+top-level schema validation, including all field annotations and validation rules defined in the nested schema class.
+
+```java
+
+@Validate
+public class Address implements Schema {
+    private String street;
+    private String city;
+}
+
+@Validate
+public class User implements Schema {
+    private String name;
+
+    @Inner(Address.class)
+    private Address address;
+}
+```
+
+#### Recursive processing
+
+Anvil processes nested schemas recursively. When validating a field annotated with `@Inner`:
+
+1. The nested input object is extracted from the parent input.
+2. The nested schema is validated independently using the same validation pipeline.
+3. All validation rules (annotations, `postBuild()` hooks) are applied to the nested schema.
+4. If validation succeeds, the validated nested schema instance is assigned to the field.
+5. If validation fails, errors are collected and prefixed with the field path.
+
+#### Error path building
+
+When nested validation fails, error messages are automatically prefixed with the full field path from the root element.
+This makes it clear which nested field has the error.
+
+For example, with the following structure:
+
+```java
+
+@Validate
+public class Country implements Schema {
+    @StrEqual("USA")
+    private String code;
+}
+
+@Validate
+public class Address implements Schema {
+    @Inner(Country.class)
+    private Country country;
+}
+
+@Validate
+public class User implements Schema {
+    @Inner(Address.class)
+    private Address address;
+}
+```
+
+If the `code` field in `Country` fails validation, the error message will show the full path:
+
+```
+for field 'address.country.code': Found value 'CAN' for field 'code', but expected equal to: 'USA'.
+```
+
+This path building works recursively for any depth of nesting, ensuring that errors always show the complete path
+from the root element to the field with the error.
+
+#### Fail-fast behavior
+
+The `failFast` setting on `@Validate` applies independently to each schema level. If a nested schema has
+`failFast = true`, validation stops on the first error within that nested schema, but the parent schema's
+`failFast` setting determines whether other fields at the parent level continue to be validated.
 
 ## String annotations
 

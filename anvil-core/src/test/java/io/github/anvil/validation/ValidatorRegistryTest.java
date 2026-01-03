@@ -36,4 +36,58 @@ class ValidatorRegistryTest {
 
         assertThat(retrievedValidator).isEqualTo(validator);
     }
+
+    @Test
+    void testAddNonOverridingValidatorWhenNoValidatorExists() {
+        Validator validator = new Validator() {
+            @Override
+            public Object validate(Object value, String fieldName, Annotation annotation) {
+                return null;
+            }
+
+            @Override
+            public Class<? extends Annotation> getSupportedAnnotation() {
+                return SuppressWarnings.class;
+            }
+        };
+
+        validatorRegistry.addNonOverridingValidator(validator);
+        Validator retrievedValidator = validatorRegistry.getValidator(SuppressWarnings.class);
+
+        assertThat(retrievedValidator).isEqualTo(validator);
+    }
+
+    @Test
+    void testAddNonOverridingValidatorDoesNotOverrideExisting() {
+        Validator firstValidator = new Validator() {
+            @Override
+            public Object validate(Object value, String fieldName, Annotation annotation) {
+                return null;
+            }
+
+            @Override
+            public Class<? extends Annotation> getSupportedAnnotation() {
+                return Override.class;
+            }
+        };
+
+        Validator secondValidator = new Validator() {
+            @Override
+            public Object validate(Object value, String fieldName, Annotation annotation) {
+                return null;
+            }
+
+            @Override
+            public Class<? extends Annotation> getSupportedAnnotation() {
+                return Override.class;
+            }
+        };
+
+        validatorRegistry.addValidator(firstValidator);
+        validatorRegistry.addNonOverridingValidator(secondValidator);
+
+        Validator retrievedValidator = validatorRegistry.getValidator(Override.class);
+        assertThat(retrievedValidator).isEqualTo(firstValidator);
+        assertThat(retrievedValidator).isNotEqualTo(secondValidator);
+    }
 }

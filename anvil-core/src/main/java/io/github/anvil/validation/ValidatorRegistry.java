@@ -89,9 +89,25 @@ public final class ValidatorRegistry {
     /**
      * Registers a new validator for its supported annotation type.
      *
+     * <p>If a validator is already registered for the annotation type, it will be replaced
+     * with the new validator.</p>
+     *
      * @param validator the validator instance to register.
      */
     public void addValidator(Validator validator) {
         this.validators.put(validator.getSupportedAnnotation(), validator);
+    }
+
+    /**
+     * Registers a validator only if no validator is already registered for its supported annotation type.
+     *
+     * <p>Unlike {@link #addValidator(Validator)}, this method will not override an existing validator.
+     * If a validator is already registered for the annotation type, this method does nothing and
+     * the existing validator remains registered.</p>
+     *
+     * @param validator the validator instance to register.
+     */
+    public void addNonOverridingValidator(Validator validator) {
+        this.validators.putIfAbsent(validator.getSupportedAnnotation(), validator);
     }
 }

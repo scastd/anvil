@@ -52,6 +52,14 @@ public class JacksonProcessor extends Processor<ObjectNode> {
      * {@inheritDoc}
      */
     @Override
+    public ObjectNode getInnerInput(ObjectNode input, String fieldName) {
+        return (ObjectNode) input.get(fieldName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Logger getLogger() {
         return logger;
     }

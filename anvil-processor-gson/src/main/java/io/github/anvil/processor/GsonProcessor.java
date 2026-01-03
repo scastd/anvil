@@ -52,6 +52,14 @@ public class GsonProcessor extends Processor<JsonObject> {
      * {@inheritDoc}
      */
     @Override
+    public JsonObject getInnerInput(JsonObject input, String fieldName) {
+        return input.getAsJsonObject(fieldName);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public Logger getLogger() {
         return logger;
     }
