@@ -27,8 +27,13 @@ The `@Validate` annotation controls:
 - `printInfo` - When `true`, Anvil logs validation metadata for the class.
 - `failFast` - When `true`, validation stops on the first error.
 
-By default, every field in a validated schema is **required**. If the input is missing a value for a field, Anvil
-emits a validation error. You can mark a field as optional by annotating it with `@OptionalValue`.
+[//]: # (@formatter:off)
+
+!!! warning
+    By default, every field in a validated schema is **required**. If the input is missing a value for a field, a
+    validation error is thrown. You can mark a field as optional by annotating it with `@OptionalValue`.
+
+[//]: # (@formatter:on)
 
 ## The validation pipeline
 
@@ -60,7 +65,7 @@ You then call `validate(input, YourSchema.class)`:
     - If there are no errors, Anvil constructs the schema instance, assigns all validated field values, and returns it.
     - Nested schemas are constructed recursively before being assigned to their parent fields.
 
-Under the hood, `Anvil` delegates to the processor and either returns a fully built `User` or throws
+Under the hood, `Anvil` delegates to the processor and either returns a fully built object or throws
 `ValidationException` with all collected `ValidationError` instances.
 
 ## Optional vs required fields

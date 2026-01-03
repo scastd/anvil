@@ -20,7 +20,7 @@ public class User implements Schema {
 
 [//]: # (@formatter:off)
 !!! warning
-    The class must extend `Schema`. If it does not, your project will not compile.
+    The class must implement `Schema`. If it does not, your project will not compile.
 
 [//]: # (@formatter:on)
 
@@ -48,7 +48,7 @@ public class User implements Schema {
 
 Marks a field as **optional** during validation.
 
-By default, all fields in a `@Validate`d schema are required: if the input is missing a value for a field, Anvil
+By default, all fields in a schema are **required**: if the input is missing a value for a field, Anvil
 produces a validation error. Annotating a field with `@OptionalValue` allows the field to be omitted without error.
 
 ```java
@@ -63,6 +63,11 @@ public class User implements Schema {
 ### `@Inner`
 
 Marks a field as containing a nested schema that should be validated independently.
+
+Options:
+
+- `value` - The schema class to use for validating the nested object. Must be a class annotated with `@Validate`
+  that implements `Schema`.
 
 When a field is annotated with `@Inner`, the field's value is extracted from the input as a nested object and validated
 using the schema class specified by the annotation's `value`. The nested validation follows the same rules as
@@ -137,11 +142,6 @@ from the root element to the field with the error.
 The `failFast` setting on `@Validate` applies independently to each schema level. If a nested schema has
 `failFast = true`, validation stops on the first error within that nested schema, but the parent schema's
 `failFast` setting determines whether other fields at the parent level continue to be validated.
-
-Options:
-
-- `value` - The schema class to use for validating the nested object. Must be a class annotated with `@Validate`
-  that implements `Schema`.
 
 ## String annotations
 
