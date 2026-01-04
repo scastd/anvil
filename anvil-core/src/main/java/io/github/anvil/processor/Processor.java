@@ -171,8 +171,8 @@ public abstract class Processor<IN> {
      * @throws ValidationException if fail-fast mode is enabled and a validation error occurs.
      */
     @SuppressWarnings("unchecked")
-    public final Schema processUnchecked(Object value, Class<?> outClass) throws ValidationException {
-        return this.process((IN) value, (Class<Schema>) outClass);
+    public final Schema processUnchecked(Object value, Class<? extends Schema> outClass) throws ValidationException {
+        return this.process((IN) value, outClass);
     }
 
     /**
