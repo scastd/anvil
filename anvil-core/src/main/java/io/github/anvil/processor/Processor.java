@@ -1,7 +1,6 @@
 package io.github.anvil.processor;
 
 import io.github.anvil.Schema;
-import io.github.anvil.annotations.Inner;
 import io.github.anvil.annotations.OptionalValue;
 import io.github.anvil.annotations.Validate;
 import io.github.anvil.exceptions.CannotSetValueException;
@@ -35,7 +34,10 @@ import java.util.Optional;
 public abstract class Processor<IN> {
     private final RestrictionChecker restrictionChecker = new RestrictionChecker();
     private final ValidatorRegistry validatorRegistry = ValidatorRegistry.getInstance(); // Made a field to avoid repeated calls
-    private final Validator innerValidator = new InnerValidator(this);
+
+    protected Processor() {
+        this.validatorRegistry.addNonOverridingValidator(new InnerValidator(this));
+    }
 
     /**
      * Extracts a boolean field value from the input.
@@ -370,13 +372,7 @@ public abstract class Processor<IN> {
         }
 
         Field[] declaredFields = clazz.getDeclaredFields();
-        Arrays.stream(declaredFields).forEach(field -> {
-            this.restrictionChecker.checkAnnotationRestrictions(field);
-
-            if (field.getAnnotation(Inner.class) != null) {
-                this.validatorRegistry.addNonOverridingValidator(this.innerValidator);
-            }
-        });
+        Arrays.stream(declaredFields).forEach(this.restrictionChecker::checkAnnotationRestrictions);
 
         if (validateAnnotation.printInfo()) {
             getLogger().info("Class {} is marked for validation.", clazz.getName());
