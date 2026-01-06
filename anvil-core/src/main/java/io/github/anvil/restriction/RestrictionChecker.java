@@ -18,7 +18,9 @@ package io.github.anvil.restriction;
 
 import io.github.anvil.annotations.numeric.Equal;
 import io.github.anvil.annotations.numeric.Greater;
+import io.github.anvil.annotations.numeric.GreaterOrEqual;
 import io.github.anvil.annotations.numeric.Less;
+import io.github.anvil.annotations.numeric.LessOrEqual;
 import io.github.anvil.exceptions.FieldViolatesRestrictionsException;
 
 import java.lang.reflect.Field;
@@ -34,7 +36,9 @@ public class RestrictionChecker {
     static {
         restrictions = List.of(
             new Restriction(Equal.class, Greater.class),
-            new Restriction(Equal.class, Less.class)
+            new Restriction(Equal.class, Less.class),
+            new Restriction(Greater.class, GreaterOrEqual.class),
+            new Restriction(Less.class, LessOrEqual.class)
         );
     }
 
