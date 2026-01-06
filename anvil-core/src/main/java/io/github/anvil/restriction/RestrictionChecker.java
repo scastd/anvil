@@ -60,7 +60,7 @@ public class RestrictionChecker {
             boolean hasAllAnnotations = restriction.annotations()
                                                    .stream()
                                                    .map(field::isAnnotationPresent)
-                                                   .reduce((a, b) -> a && b)
+                                                   .reduce(Boolean::logicalAnd)
                                                    .orElse(false);
 
             if (hasAllAnnotations) {
