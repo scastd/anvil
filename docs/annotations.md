@@ -191,6 +191,19 @@ Options:
 - `value` - Array of allowed string values.
 - `strategy` - Comparison strategy, using `StringComparisonStrategy` (`CASE_SENSITIVE` by default).
 
+### `@UUID`
+
+Validates that a string is a valid UUID format (e.g., "550e8400-e29b-41d4-a716-446655440000").
+
+```java
+
+@UUID
+private String userId;
+```
+
+The validator checks that the string matches the standard UUID format with hyphens separating the five groups of
+hexadecimal digits (8-4-4-4-12).
+
 ## Enum annotations
 
 ### `@EnumValue`
