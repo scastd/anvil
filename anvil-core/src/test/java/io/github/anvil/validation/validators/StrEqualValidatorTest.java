@@ -54,7 +54,7 @@ class StrEqualValidatorTest {
         Annotation annotation = getFieldAnnotation(StrEqualTestSchema.class, "caseSensitiveField", StrEqual.class);
         assertThatThrownBy(() -> this.validator.validate("First", "caseSensitiveField", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Found value 'First' for field 'caseSensitiveField', but expected equal to: 'first'.");
+            .hasMessage("for field 'caseSensitiveField': Found value 'First', but expected equal to: 'first'.");
     }
 
     @Test
@@ -76,7 +76,7 @@ class StrEqualValidatorTest {
         Annotation annotation = getFieldAnnotation(StrEqualTestSchema.class, "caseInsensitiveField", StrEqual.class);
         assertThatThrownBy(() -> this.validator.validate("different", "caseInsensitiveField", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Found value 'different' for field 'caseInsensitiveField', but expected equal to: 'second'.");
+            .hasMessage("for field 'caseInsensitiveField': Found value 'different', but expected equal to: 'second'.");
     }
 
     @Test

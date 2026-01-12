@@ -60,7 +60,7 @@ class BetweenValidatorTest {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
         assertThatThrownBy(() -> this.validator.validate(100, "percentage", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'percentage' must be between 0.0 and 100.0 (not inclusive), but found 100.0");
+            .hasMessage("for field 'percentage': Must be between 0.0 and 100.0 (not inclusive), but found 100.0.");
     }
 
     @Test
@@ -68,7 +68,7 @@ class BetweenValidatorTest {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
         assertThatThrownBy(() -> this.validator.validate(-1, "percentage", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'percentage' must be between 0.0 and 100.0 (not inclusive), but found -1.0");
+            .hasMessage("for field 'percentage': Must be between 0.0 and 100.0 (not inclusive), but found -1.0.");
     }
 
     @Test
@@ -76,7 +76,7 @@ class BetweenValidatorTest {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
         assertThatThrownBy(() -> this.validator.validate(150, "percentage", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'percentage' must be between 0.0 and 100.0 (not inclusive), but found 150.0");
+            .hasMessage("for field 'percentage': Must be between 0.0 and 100.0 (not inclusive), but found 150.0.");
     }
 
     @Test
@@ -84,7 +84,7 @@ class BetweenValidatorTest {
         Annotation annotation = getFieldAnnotation(BetweenTestSchema.class, "percentage", Between.class);
         assertThatThrownBy(() -> this.validator.validate("not a number", "percentage", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'percentage' is not a number.");
+            .hasMessage("for field 'percentage': Is not a number.");
     }
 
     @Test

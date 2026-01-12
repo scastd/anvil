@@ -40,11 +40,11 @@ public final class ValidationError extends Exception {
      */
     private static String requireNonBlank(String message) {
         if (message == null) {
-            throw new IllegalArgumentException("Validation error message cannot be null");
+            throw new IllegalArgumentException("Validation error message cannot be null.");
         }
 
         if (message.isBlank()) {
-            throw new IllegalArgumentException("Validation error message cannot be blank");
+            throw new IllegalArgumentException("Validation error message cannot be blank.");
         }
 
         return message;

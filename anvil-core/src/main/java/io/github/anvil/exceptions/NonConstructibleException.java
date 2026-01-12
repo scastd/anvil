@@ -29,7 +29,7 @@ public class NonConstructibleException extends RuntimeException {
      */
     public NonConstructibleException(Class<?> clazz, Throwable cause) {
         super(
-            "Failed to create an instance of class: %s. Ensure it has a public no-arg/all-args constructor."
+            "Failed to create an instance of class '%s'. Ensure it has a public no-arg/all-args constructor."
                 .formatted(clazz.getName()),
             cause
         );

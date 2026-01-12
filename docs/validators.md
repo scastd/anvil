@@ -113,7 +113,7 @@ public class StartsWithValidator implements Validator {
 
         if (!stringValue.startsWith(startsWith.value())) {
             throw new ValidationError(
-                "Field '%s' must start with '%s'".formatted(fieldName, startsWith.value())
+                "for field '%s': Must start with '%s'.".formatted(fieldName, startsWith.value())
             );
         }
 

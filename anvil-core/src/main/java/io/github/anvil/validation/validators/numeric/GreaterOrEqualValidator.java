@@ -42,7 +42,7 @@ public class GreaterOrEqualValidator extends NumericValidator {
 
         if (number < greaterOrEqual.value()) {
             throw new ValidationError(
-                "Field '%s' must be greater than or equal to the specified value (%s).".formatted(fieldName,
+                "for field '%s': Must be greater than or equal to the specified value (%s).".formatted(fieldName,
                                                                                                   greaterOrEqual.value()));
         }
 

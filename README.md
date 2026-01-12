@@ -358,7 +358,7 @@ public class User implements Schema {
     @Override
     public void postBuild() throws ValidationError {
         if (role.equalsIgnoreCase("administrator")) {
-            throw new ValidationError("Role 'administrator' is not allowed.");
+            throw new ValidationError("for field 'role': Role 'administrator' is not allowed.");
         }
 
         System.out.println("Deserialization completed.");

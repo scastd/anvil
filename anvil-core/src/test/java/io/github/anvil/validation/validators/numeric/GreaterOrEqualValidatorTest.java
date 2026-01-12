@@ -60,7 +60,7 @@ class GreaterOrEqualValidatorTest {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "nonNegative", GreaterOrEqual.class);
         assertThatThrownBy(() -> this.validator.validate(-1, "nonNegative", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'nonNegative' must be greater than or equal to the specified value (0.0).");
+            .hasMessage("for field 'nonNegative': Must be greater than or equal to the specified value (0.0).");
     }
 
     @Test
@@ -68,7 +68,7 @@ class GreaterOrEqualValidatorTest {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "nonNegative", GreaterOrEqual.class);
         assertThatThrownBy(() -> this.validator.validate("not a number", "nonNegative", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'nonNegative' is not a number.");
+            .hasMessage("for field 'nonNegative': Is not a number.");
     }
 
     @Test
@@ -90,7 +90,7 @@ class GreaterOrEqualValidatorTest {
         Annotation annotation = getFieldAnnotation(GreaterOrEqualTestSchema.class, "age", GreaterOrEqual.class);
         assertThatThrownBy(() -> this.validator.validate(17, "age", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'age' must be greater than or equal to the specified value (18.0).");
+            .hasMessage("for field 'age': Must be greater than or equal to the specified value (18.0).");
     }
 
     @Test

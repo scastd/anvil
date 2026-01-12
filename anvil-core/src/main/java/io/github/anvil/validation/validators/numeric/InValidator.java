@@ -44,7 +44,7 @@ public class InValidator extends NumericValidator {
 
         if (validValues.length == 0) {
             throw new ValidationError(
-                "At least one valid value must be specified for the '@In' validation on field '%s'.".formatted(
+                "for field '%s': At least one valid value must be specified for the '@In' validation.".formatted(
                     fieldName));
         }
 
@@ -55,7 +55,7 @@ public class InValidator extends NumericValidator {
         }
 
         throw new ValidationError(
-            "Found value '%s' for field '%s', but expected one of: %s.".formatted(number, fieldName,
+            "for field '%s': Found value '%s', but expected one of: %s.".formatted(fieldName, number,
                                                                                   Arrays.toString(validValues)));
     }
 

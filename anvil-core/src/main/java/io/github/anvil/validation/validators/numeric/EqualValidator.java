@@ -42,7 +42,7 @@ public class EqualValidator extends NumericValidator {
 
         if (number != equal.value()) {
             throw new ValidationError(
-                "Field '%s' must be equal to the specified value (%s).".formatted(fieldName, equal.value()));
+                "for field '%s': Must be equal to the specified value (%s).".formatted(fieldName, equal.value()));
         }
 
         return null;

@@ -101,8 +101,8 @@ Nested errors use dot notation to show the complete path. For example:
 
 ```
 Validation failed with 2 error(s):
-	- for field 'user.address.street': Field 'street' must not be empty
-	- for field 'user.address.country.code': Found value 'CAN' for field 'code', but expected equal to: 'USA'
+	- for field 'user.address.street': Field 'street' must not be empty.
+	- for field 'user.address.country.code': Found value 'CAN', but expected equal to: 'USA'.
 ```
 
 The path `user.address.street` indicates:
@@ -122,7 +122,7 @@ try {
     for (ValidationError error : e.getErrors()) {
         String message = error.getMessage();
         // Parse the message to extract field path and error details
-        // Example: "for field 'user.address.street': Field 'street' must not be empty"
+    // Example: "for field 'user.address.street': Field 'street' must not be empty."
     }
 }
 ```

@@ -61,7 +61,7 @@ class ValidationExceptionTest {
             throw new ValidationException(Collections.emptyList());
         })
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("ValidationException requires at least one validation error");
+            .hasMessage("ValidationException requires at least one validation error.");
     }
 
     @Test
@@ -70,7 +70,7 @@ class ValidationExceptionTest {
             throw new ValidationException(null);
         })
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("ValidationException requires at least one validation error");
+            .hasMessage("ValidationException requires at least one validation error.");
     }
 
     @Test

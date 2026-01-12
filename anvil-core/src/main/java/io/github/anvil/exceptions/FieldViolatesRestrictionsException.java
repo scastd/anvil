@@ -33,7 +33,7 @@ public class FieldViolatesRestrictionsException extends IllegalStateException {
      */
     public FieldViolatesRestrictionsException(String fieldName, Restriction restriction) {
         super(
-            "Field '%s' violates annotation restrictions: [%s]".formatted(fieldName, getRestrictionNames(restriction))
+            "Field '%s' violates annotation restrictions: [%s].".formatted(fieldName, getRestrictionNames(restriction))
         );
     }
 

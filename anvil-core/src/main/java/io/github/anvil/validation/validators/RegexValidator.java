@@ -43,7 +43,7 @@ public class RegexValidator implements Validator {
 
         if (value == null || !((String) value).matches(pattern)) {
             throw new ValidationError(
-                "Value '%s' for field '%s' does not match the required pattern: '%s'.".formatted(value, fieldName,
+                "for field '%s': Value '%s' does not match the required pattern: '%s'.".formatted(fieldName, value,
                                                                                                  pattern));
         }
 
