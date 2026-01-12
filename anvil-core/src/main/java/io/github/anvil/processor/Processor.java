@@ -28,6 +28,7 @@ import io.github.anvil.validation.ValidationErrors;
 import io.github.anvil.validation.Validator;
 import io.github.anvil.validation.ValidatorRegistry;
 import io.github.anvil.validation.validators.InnerValidator;
+import io.github.anvil.validation.validators.ListValidator;
 import org.slf4j.Logger;
 
 import java.lang.annotation.Annotation;
@@ -53,6 +54,7 @@ public abstract class Processor<IN> {
 
     protected Processor() {
         this.validatorRegistry.addNonOverridingValidator(new InnerValidator(this));
+        this.validatorRegistry.addNonOverridingValidator(new ListValidator(this));
     }
 
     /**
