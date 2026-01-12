@@ -53,7 +53,7 @@ class InValidatorTest {
         Annotation annotation = getFieldAnnotation(InTestSchema.class, "smallNumber", In.class);
         assertThatThrownBy(() -> this.validator.validate(5, "smallNumber", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Found value '5.0' for field 'smallNumber', but expected one of: [1.0, 2.0, 3.0].");
+            .hasMessage("for field 'smallNumber': Found value '5.0', but expected one of: [1.0, 2.0, 3.0].");
     }
 
     @Test
@@ -61,7 +61,7 @@ class InValidatorTest {
         Annotation annotation = getFieldAnnotation(InTestSchema.class, "smallNumber", In.class);
         assertThatThrownBy(() -> this.validator.validate("not a number", "smallNumber", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'smallNumber' is not a number.");
+            .hasMessage("for field 'smallNumber': Is not a number.");
     }
 
     @Test
@@ -76,7 +76,7 @@ class InValidatorTest {
         Annotation annotation = getFieldAnnotation(InTestSchema.class, "decimalNumber", In.class);
         assertThatThrownBy(() -> this.validator.validate(15.5, "decimalNumber", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Found value '15.5' for field 'decimalNumber', but expected one of: [10.5, 20.5, 30.5].");
+            .hasMessage("for field 'decimalNumber': Found value '15.5', but expected one of: [10.5, 20.5, 30.5].");
     }
 
     @Test

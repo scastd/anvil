@@ -60,7 +60,7 @@ class LessOrEqualValidatorTest {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "maxScore", LessOrEqual.class);
         assertThatThrownBy(() -> this.validator.validate(150, "maxScore", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'maxScore' must be less than or equal to the specified value (100.0).");
+            .hasMessage("for field 'maxScore': Must be less than or equal to the specified value (100.0).");
     }
 
     @Test
@@ -68,7 +68,7 @@ class LessOrEqualValidatorTest {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "maxScore", LessOrEqual.class);
         assertThatThrownBy(() -> this.validator.validate("not a number", "maxScore", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'maxScore' is not a number.");
+            .hasMessage("for field 'maxScore': Is not a number.");
     }
 
     @Test
@@ -90,7 +90,7 @@ class LessOrEqualValidatorTest {
         Annotation annotation = getFieldAnnotation(LessOrEqualTestSchema.class, "rating", LessOrEqual.class);
         assertThatThrownBy(() -> this.validator.validate(6.0, "rating", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'rating' must be less than or equal to the specified value (5.0).");
+            .hasMessage("for field 'rating': Must be less than or equal to the specified value (5.0).");
     }
 
     @Test

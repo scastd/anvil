@@ -53,7 +53,7 @@ class EqualValidatorTest {
         Annotation annotation = getFieldAnnotation(EqualTestSchema.class, "integerField", Equal.class);
         assertThatThrownBy(() -> this.validator.validate(43, "integerField", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'integerField' must be equal to the specified value (42.0).");
+            .hasMessage("for field 'integerField': Must be equal to the specified value (42.0).");
     }
 
     @Test
@@ -61,7 +61,7 @@ class EqualValidatorTest {
         Annotation annotation = getFieldAnnotation(EqualTestSchema.class, "integerField", Equal.class);
         assertThatThrownBy(() -> this.validator.validate(41, "integerField", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'integerField' must be equal to the specified value (42.0).");
+            .hasMessage("for field 'integerField': Must be equal to the specified value (42.0).");
     }
 
     @Test
@@ -69,7 +69,7 @@ class EqualValidatorTest {
         Annotation annotation = getFieldAnnotation(EqualTestSchema.class, "integerField", Equal.class);
         assertThatThrownBy(() -> this.validator.validate("not a number", "integerField", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'integerField' is not a number.");
+            .hasMessage("for field 'integerField': Is not a number.");
     }
 
     @Test
@@ -84,7 +84,7 @@ class EqualValidatorTest {
         Annotation annotation = getFieldAnnotation(EqualTestSchema.class, "doubleField", Equal.class);
         assertThatThrownBy(() -> this.validator.validate(3.15, "doubleField", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'doubleField' must be equal to the specified value (3.14).");
+            .hasMessage("for field 'doubleField': Must be equal to the specified value (3.14).");
     }
 
     @Test

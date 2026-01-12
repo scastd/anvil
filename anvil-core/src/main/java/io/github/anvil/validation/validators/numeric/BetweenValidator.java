@@ -42,7 +42,7 @@ public class BetweenValidator extends NumericValidator {
 
         if (number < between.min() || number >= between.max()) {
             throw new ValidationError(
-                "Field '%s' must be between %s and %s (not inclusive), but found %s".formatted(
+                "for field '%s': Must be between %s and %s (not inclusive), but found %s.".formatted(
                     fieldName,
                     between.min(),
                     between.max(),

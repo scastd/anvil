@@ -37,6 +37,6 @@ public abstract class NumericValidator implements Validator {
             return number;
         }
 
-        throw new ValidationError("Field '%s' is not a number.".formatted(fieldName));
+        throw new ValidationError("for field '%s': Is not a number.".formatted(fieldName));
     }
 }

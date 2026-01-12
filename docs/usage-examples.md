@@ -26,7 +26,7 @@ public class UserRegistration implements Schema {
     @Override
     public void postBuild() throws ValidationError {
         if (username.length() < 3) {
-            throw new ValidationError("Username must be at least 3 characters");
+            throw new ValidationError("for field 'username': Must be at least 3 characters.");
         }
     }
 }

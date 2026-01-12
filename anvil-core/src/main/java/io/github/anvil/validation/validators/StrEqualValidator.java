@@ -44,7 +44,7 @@ public class StrEqualValidator implements Validator {
 
         if (!StringComparer.equal((String) value, expectedValue, strEqual.strategy())) {
             throw new ValidationError(
-                "Found value '%s' for field '%s', but expected equal to: '%s'.".formatted(value, fieldName,
+                "for field '%s': Found value '%s', but expected equal to: '%s'.".formatted(fieldName, value,
                                                                                           expectedValue));
         }
 

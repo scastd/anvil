@@ -53,7 +53,7 @@ class GreaterValidatorTest {
         Annotation annotation = getFieldAnnotation(GreaterTestSchema.class, "positive", Greater.class);
         assertThatThrownBy(() -> this.validator.validate(0, "positive", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'positive' must be greater than the specified value (0.0).");
+            .hasMessage("for field 'positive': Must be greater than the specified value (0.0).");
     }
 
     @Test
@@ -61,7 +61,7 @@ class GreaterValidatorTest {
         Annotation annotation = getFieldAnnotation(GreaterTestSchema.class, "positive", Greater.class);
         assertThatThrownBy(() -> this.validator.validate(-1, "positive", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'positive' must be greater than the specified value (0.0).");
+            .hasMessage("for field 'positive': Must be greater than the specified value (0.0).");
     }
 
     @Test
@@ -69,7 +69,7 @@ class GreaterValidatorTest {
         Annotation annotation = getFieldAnnotation(GreaterTestSchema.class, "positive", Greater.class);
         assertThatThrownBy(() -> this.validator.validate("not a number", "positive", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'positive' is not a number.");
+            .hasMessage("for field 'positive': Is not a number.");
     }
 
     @Test
@@ -84,7 +84,7 @@ class GreaterValidatorTest {
         Annotation annotation = getFieldAnnotation(GreaterTestSchema.class, "adult", Greater.class);
         assertThatThrownBy(() -> this.validator.validate(18, "adult", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'adult' must be greater than the specified value (18.0).");
+            .hasMessage("for field 'adult': Must be greater than the specified value (18.0).");
     }
 
     @Test

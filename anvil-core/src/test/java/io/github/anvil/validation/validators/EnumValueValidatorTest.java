@@ -57,7 +57,7 @@ class EnumValueValidatorTest {
         assertThatThrownBy(() -> this.validator.validate("YELLOW", "color", annotation))
             .isInstanceOf(ValidationError.class)
             .hasMessage(
-                "Field 'color' has value 'YELLOW' which is not among the allowed enum values for the enum 'Color': [RED, GREEN, BLUE]");
+                "for field 'color': Value 'YELLOW' is not among the allowed enum values for the enum 'Color': [RED, GREEN, BLUE]");
     }
 
     @Test
@@ -66,7 +66,7 @@ class EnumValueValidatorTest {
         assertThatThrownBy(() -> this.validator.validate("red", "color", annotation))
             .isInstanceOf(ValidationError.class)
             .hasMessage(
-                "Field 'color' has value 'red' which is not among the allowed enum values for the enum 'Color': [RED, GREEN, BLUE]");
+                "for field 'color': Value 'red' is not among the allowed enum values for the enum 'Color': [RED, GREEN, BLUE]");
     }
 
     @Test
@@ -74,7 +74,7 @@ class EnumValueValidatorTest {
         Annotation annotation = getFieldAnnotation(EnumValueTestSchema.class, "color", EnumValue.class);
         assertThatThrownBy(() -> this.validator.validate(123, "color", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'color' is not a string (123), cannot validate enum value.");
+            .hasMessage("for field 'color': Is not a string (123), cannot validate enum value.");
     }
 
     @Test

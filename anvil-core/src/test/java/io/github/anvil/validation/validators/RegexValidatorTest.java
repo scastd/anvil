@@ -56,7 +56,7 @@ class RegexValidatorTest {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "lowercaseField", Regex.class);
         assertThatThrownBy(() -> this.validator.validate("ABC", "lowercaseField", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Value 'ABC' for field 'lowercaseField' does not match the required pattern: '[a-z]+'.");
+            .hasMessage("for field 'lowercaseField': Value 'ABC' does not match the required pattern: '[a-z]+'.");
     }
 
     @Test
@@ -64,7 +64,7 @@ class RegexValidatorTest {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "lowercaseField", Regex.class);
         assertThatThrownBy(() -> this.validator.validate(null, "lowercaseField", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Value 'null' for field 'lowercaseField' does not match the required pattern: '[a-z]+'.");
+            .hasMessage("for field 'lowercaseField': Value 'null' does not match the required pattern: '[a-z]+'.");
     }
 
     @Test
@@ -79,7 +79,8 @@ class RegexValidatorTest {
         Annotation annotation = getFieldAnnotation(RegexTestSchema.class, "phoneField", Regex.class);
         assertThatThrownBy(() -> this.validator.validate("1234567", "phoneField", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Value '1234567' for field 'phoneField' does not match the required pattern: '\\d{3}-\\d{4}'.");
+            .hasMessage(
+                "for field 'phoneField': Value '1234567' does not match the required pattern: '\\d{3}-\\d{4}'.");
     }
 
     @Test
@@ -95,7 +96,7 @@ class RegexValidatorTest {
         assertThatThrownBy(() -> this.validator.validate("hello", "capitalizedField", annotation))
             .isInstanceOf(ValidationError.class)
             .hasMessage(
-                "Value 'hello' for field 'capitalizedField' does not match the required pattern: '^[A-Z][a-z]*$'.");
+                "for field 'capitalizedField': Value 'hello' does not match the required pattern: '^[A-Z][a-z]*$'.");
     }
 
     @Test

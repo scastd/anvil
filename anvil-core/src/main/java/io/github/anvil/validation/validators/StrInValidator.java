@@ -50,7 +50,7 @@ public class StrInValidator implements Validator {
         }
 
         throw new ValidationError(
-            "Field '%s' with value '%s' is not in the allowed set: %s".formatted(fieldName, value,
+            "for field '%s': Value '%s' is not in the allowed set: %s".formatted(fieldName, value,
                                                                                  Arrays.toString(validValues))
         );
     }

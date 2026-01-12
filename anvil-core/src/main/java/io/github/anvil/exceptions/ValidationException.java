@@ -59,7 +59,7 @@ public class ValidationException extends RuntimeException {
      */
     private static String formatErrors(Collection<ValidationError> validationErrors) {
         if (validationErrors == null || validationErrors.isEmpty()) {
-            throw new IllegalArgumentException("ValidationException requires at least one validation error");
+            throw new IllegalArgumentException("ValidationException requires at least one validation error.");
         }
 
         String collect = validationErrors.stream()

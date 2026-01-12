@@ -131,7 +131,7 @@ public class User implements Schema {
 If the `code` field in `Country` fails validation, the error message will show the full path:
 
 ```
-for field 'address.country.code': Found value 'CAN' for field 'code', but expected equal to: 'USA'.
+for field 'address.country.code': Found value 'CAN', but expected equal to: 'USA'.
 ```
 
 This path building works recursively for any depth of nesting, ensuring that errors always show the complete path

@@ -42,7 +42,7 @@ public class LessValidator extends NumericValidator {
 
         if (number >= less.value()) {
             throw new ValidationError(
-                "Field '%s' must be less than the specified value (%s).".formatted(fieldName, less.value()));
+                "for field '%s': Must be less than the specified value (%s).".formatted(fieldName, less.value()));
         }
 
         return null;

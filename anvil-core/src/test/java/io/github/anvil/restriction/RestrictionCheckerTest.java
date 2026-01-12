@@ -58,6 +58,6 @@ class RestrictionCheckerTest {
 
         assertThatThrownBy(() -> this.restrictionChecker.checkAnnotationRestrictions(field))
             .isInstanceOf(FieldViolatesRestrictionsException.class)
-            .hasMessage("Field 'fieldViolates' violates annotation restrictions: [Equal, Greater]");
+            .hasMessage("Field 'fieldViolates' violates annotation restrictions: [Equal, Greater].");
     }
 }

@@ -55,7 +55,7 @@ class StrInValidatorTest {
         assertThatThrownBy(() -> this.validator.validate("Apple", "caseSensitiveField", annotation))
             .isInstanceOf(ValidationError.class)
             .hasMessage(
-                "Field 'caseSensitiveField' with value 'Apple' is not in the allowed set: [apple, banana, orange]");
+                "for field 'caseSensitiveField': Value 'Apple' is not in the allowed set: [apple, banana, orange]");
     }
 
     @Test
@@ -78,7 +78,7 @@ class StrInValidatorTest {
         assertThatThrownBy(() -> this.validator.validate("Yellow", "caseInsensitiveField", annotation))
             .isInstanceOf(ValidationError.class)
             .hasMessage(
-                "Field 'caseInsensitiveField' with value 'Yellow' is not in the allowed set: [Red, Green, Blue]");
+                "for field 'caseInsensitiveField': Value 'Yellow' is not in the allowed set: [Red, Green, Blue]");
     }
 
     @Test

@@ -52,7 +52,7 @@ public class GsonProcessor extends Processor<JsonObject> {
             case "Double", "double" -> element.getAsDouble();
             case "Short", "short" -> element.getAsShort();
             case "Byte", "byte" -> element.getAsByte();
-            default -> throw new IllegalArgumentException("Unsupported number class: " + numberClass.getName());
+            default -> throw new IllegalArgumentException("Unsupported number class: " + numberClass.getName() + ".");
         };
     }
 

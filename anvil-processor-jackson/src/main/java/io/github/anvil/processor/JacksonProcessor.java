@@ -52,7 +52,7 @@ public class JacksonProcessor extends Processor<ObjectNode> {
             case "Double", "double" -> element.doubleValue();
             case "Short", "short" -> element.shortValue();
             case "Byte", "byte" -> element.numberValue().byteValue();
-            default -> throw new IllegalArgumentException("Unsupported number class: " + numberClass.getName());
+            default -> throw new IllegalArgumentException("Unsupported number class: " + numberClass.getName() + ".");
         };
     }
 

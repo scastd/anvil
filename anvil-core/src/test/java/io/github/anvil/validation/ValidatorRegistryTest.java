@@ -30,7 +30,7 @@ class ValidatorRegistryTest {
     void testGetValidatorThrowsWhenNotFound() {
         assertThatThrownBy(() -> validatorRegistry.getValidator(Deprecated.class))
             .isInstanceOf(IllegalArgumentException.class)
-            .hasMessage("No validator found for annotation: java.lang.Deprecated");
+            .hasMessage("No validator found for annotation: java.lang.Deprecated.");
     }
 
     @Test

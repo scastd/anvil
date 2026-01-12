@@ -53,7 +53,7 @@ class LessValidatorTest {
         Annotation annotation = getFieldAnnotation(LessTestSchema.class, "score", Less.class);
         assertThatThrownBy(() -> this.validator.validate(100, "score", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'score' must be less than the specified value (100.0).");
+            .hasMessage("for field 'score': Must be less than the specified value (100.0).");
     }
 
     @Test
@@ -61,7 +61,7 @@ class LessValidatorTest {
         Annotation annotation = getFieldAnnotation(LessTestSchema.class, "score", Less.class);
         assertThatThrownBy(() -> this.validator.validate("not a number", "score", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'score' is not a number.");
+            .hasMessage("for field 'score': Is not a number.");
     }
 
     @Test
@@ -76,7 +76,7 @@ class LessValidatorTest {
         Annotation annotation = getFieldAnnotation(LessTestSchema.class, "value", Less.class);
         assertThatThrownBy(() -> this.validator.validate(10.0, "value", annotation))
             .isInstanceOf(ValidationError.class)
-            .hasMessage("Field 'value' must be less than the specified value (10.0).");
+            .hasMessage("for field 'value': Must be less than the specified value (10.0).");
     }
 
     @Test

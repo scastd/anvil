@@ -230,7 +230,8 @@ public abstract class Processor<IN> {
                        .filter(s -> s.length() == 1)
                        .map(s -> s.charAt(0))
                        .orElseThrow(
-                           () -> new IllegalArgumentException("Expected a single character for field: " + fieldName));
+                           () -> new IllegalArgumentException(
+                               "Expected a single character for field '%s'.".formatted(fieldName)));
     }
 
     /**
@@ -380,11 +381,11 @@ public abstract class Processor<IN> {
         Validate validateAnnotation = clazz.getAnnotation(Validate.class);
 
         if (validateAnnotation == null) {
-            throw new IllegalStateException("Class " + clazz.getName() + " is not annotated with @Validate");
+            throw new IllegalStateException("Class '%s' is not annotated with @Validate.".formatted(clazz.getName()));
         }
 
         if (!validateAnnotation.value()) {
-            throw new IllegalStateException("Validation is disabled for class " + clazz.getName());
+            throw new IllegalStateException("Validation is disabled for class '%s'.".formatted(clazz.getName()));
         }
 
         Field[] declaredFields = clazz.getDeclaredFields();

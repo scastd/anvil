@@ -96,7 +96,7 @@ public final class ValidatorRegistry {
         var validator = validators.get(annotationClass);
 
         if (validator == null) {
-            throw new IllegalArgumentException("No validator found for annotation: " + annotationClass.getName());
+            throw new IllegalArgumentException("No validator found for annotation: " + annotationClass.getName() + ".");
         }
 
         return validator;

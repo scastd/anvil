@@ -43,7 +43,7 @@ public class EnumValueValidator implements Validator {
     public Object validate(Object value, String fieldName, Annotation annotation) throws ValidationError {
         if (!(value instanceof String stringValue)) {
             throw new ValidationError(
-                "Field '%s' is not a string (%s), cannot validate enum value.".formatted(fieldName, value));
+                "for field '%s': Is not a string (%s), cannot validate enum value.".formatted(fieldName, value));
         }
 
         EnumValue enumValue = (EnumValue) annotation;
@@ -55,7 +55,7 @@ public class EnumValueValidator implements Validator {
                      .filter(enumConstant -> enumConstant.name().equals(value))
                      .findFirst()
                      .orElseThrow(() -> new ValidationError(
-                         "Field '%s' has value '%s' which is not among the allowed enum values for the enum '%s': %s".formatted(
+                         "for field '%s': Value '%s' is not among the allowed enum values for the enum '%s': %s".formatted(
                              fieldName, stringValue, enumClass.getSimpleName(), allowedValues)));
     }
 
