@@ -24,8 +24,8 @@ import io.github.anvil.validation.ValidationError;
 import io.github.anvil.validation.Validator;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -73,11 +73,11 @@ public class ListValidator implements Validator {
      * about which list element and field has the error. All nested errors are preserved and thrown
      * as a {@link ValidationException} (unchecked) so they can all be collected by the processor.</p>
      *
-     * @param value      the list input value to validate (must be a Collection or array).
+     * @param value      the list input value to validate (must be a Collection/Iterable or array).
      * @param fieldName  the name of the field being validated (used for error messages).
      * @param annotation the {@link List} annotation instance.
      * @return a list containing the validated and constructed schema instances.
-     * @throws ValidationError     if the value is null or not a collection/array, or if validation
+     * @throws ValidationError     if the value is null or not a collection/iterable/array, or if validation
      *                             of a list element fails (for single errors).
      * @throws ValidationException if validation of list elements fails with multiple errors.
      *                             The exception contains all nested errors with field paths prefixed
@@ -92,7 +92,7 @@ public class ListValidator implements Validator {
             throw new ValidationError("for field '%s': List value cannot be null.".formatted(fieldName));
         }
 
-        Collection<?> collection = convertToCollection(value);
+        Collection<?> collection = convertToCollection(value, fieldName);
         java.util.List<Schema> validatedElements = new ArrayList<>();
         java.util.List<ValidationError> allErrors = new ArrayList<>();
 
@@ -125,30 +125,27 @@ public class ListValidator implements Validator {
     }
 
     /**
-     * Converts the given value to a Collection, handling both Collection instances and arrays.
+     * Converts the given value to a Collection, handling both Iterable instances and arrays.
      *
-     * @param value the value to convert.
+     * @param value     the value to convert.
+     * @param fieldName the name of the field being validated (used for error messages).
      * @return a Collection containing the elements.
-     * @throws ValidationError if the value is not a Collection or array.
+     * @throws ValidationError if the value is not an Iterable or array.
      */
-    private Collection<?> convertToCollection(Object value) throws ValidationError {
-        if (value instanceof Collection) {
-            return (Collection<?>) value;
-        }
-
-        if (value.getClass().isArray()) {
-            int length = Array.getLength(value);
-            java.util.List<Object> list = new ArrayList<>(length);
-
-            for (int i = 0; i < length; i++) {
-                list.add(Array.get(value, i));
-            }
-
+    private Collection<?> convertToCollection(Object value, String fieldName) throws ValidationError {
+        if (value instanceof Iterable<?> iterable) {
+            java.util.List<Object> list = new ArrayList<>();
+            iterable.forEach(list::add);
             return list;
         }
 
+        if (value.getClass().isArray()) {
+            return Arrays.asList((Object[]) value);
+        }
+
         throw new ValidationError(
-            "Value must be a Collection or array, but was: %s.".formatted(value.getClass().getName()));
+            "for field '%s': Value must be an Iterable or array, but was: %s.".formatted(fieldName,
+                                                                                         value.getClass().getName()));
     }
 
     /**
