@@ -134,7 +134,7 @@ class ListValidatorTest {
             .isInstanceOf(ValidationError.class)
             .satisfies(error -> {
                 assertThat(error.getMessage())
-                    .contains("Value must be a Collection or array, but was: java.lang.String");
+                    .contains("for field 'items': Value must be an Iterable or array, but was: java.lang.String.");
             });
     }
 
