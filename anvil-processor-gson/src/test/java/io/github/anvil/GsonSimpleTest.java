@@ -16,7 +16,9 @@
 
 package io.github.anvil;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import io.github.anvil.annotations.List;
 import io.github.anvil.annotations.OptionalValue;
 import io.github.anvil.annotations.StrEqual;
 import io.github.anvil.annotations.Validate;
@@ -49,7 +51,7 @@ class GsonSimpleTest {
 
     @Test
     void processNoArgsConstructor() {
-        Anvil<JsonObject> anvil = new Anvil<>(new GsonProcessor());
+        Anvil<JsonElement> anvil = new Anvil<>(new GsonProcessor());
 
         JsonObject json = getJsonObject("""
                                             {
@@ -103,7 +105,7 @@ class GsonSimpleTest {
 
     @Test
     void processAllArgsConstructor() {
-        Anvil<JsonObject> anvil = new Anvil<>(new GsonProcessor());
+        Anvil<JsonElement> anvil = new Anvil<>(new GsonProcessor());
 
         JsonObject json = getJsonObject("""
                                             {
@@ -144,7 +146,7 @@ class GsonSimpleTest {
 
     @Test
     void processRecord() {
-        Anvil<JsonObject> anvil = new Anvil<>(new GsonProcessor());
+        Anvil<JsonElement> anvil = new Anvil<>(new GsonProcessor());
 
         JsonObject json = getJsonObject("""
                                             {
@@ -161,5 +163,39 @@ class GsonSimpleTest {
         assertThat(validated.intField).isEqualTo(10);
         assertThat(validated.shortField).isEqualTo((short) 10);
         assertThat(validated.stringField).isNull();
+    }
+
+    @Validate
+    public record Element(
+        @Equal(10.2f)
+        Float floatField
+    ) implements Schema {
+    }
+
+    @Validate
+    public record RecordWithArray(
+        @List(Element.class)
+        java.util.List<Element> elements
+    ) implements Schema {
+    }
+
+    @Test
+    void processRecordWithArray() {
+        Anvil<JsonElement> anvil = new Anvil<>(new GsonProcessor());
+
+        JsonObject json = getJsonObject("""
+                                            {
+                                                "elements": [
+                                                    { "floatField": 10.2 },
+                                                    { "floatField": 10.2 }
+                                                ]
+                                            }
+                                            """);
+
+        RecordWithArray validated = anvil.validate(json, RecordWithArray.class);
+        assertThat(validated.elements).hasSize(2);
+        for (Element element : validated.elements) {
+            assertThat(element.floatField).isEqualTo(10.2f);
+        }
     }
 }

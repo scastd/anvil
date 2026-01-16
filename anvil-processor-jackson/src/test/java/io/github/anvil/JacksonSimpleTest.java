@@ -16,8 +16,9 @@
 
 package io.github.anvil;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import io.github.anvil.annotations.EnumValue;
+import io.github.anvil.annotations.List;
 import io.github.anvil.annotations.Validate;
 import io.github.anvil.annotations.numeric.Equal;
 import io.github.anvil.processor.JacksonProcessor;
@@ -48,17 +49,17 @@ class JacksonSimpleTest {
 
     @Test
     void process() {
-        Anvil<ObjectNode> anvil = new Anvil<>(new JacksonProcessor());
+        Anvil<JsonNode> anvil = new Anvil<>(new JacksonProcessor());
 
-        ObjectNode json = getObjectNode("""
-                                            {
-                                                "floatField": 10.2,
-                                                "doubleField": 10.2,
-                                                "intField": 10,
-                                                "shortField": 10,
-                                                "stringComparisonStrategy": "CASE_SENSITIVE"
-                                            }
-                                            """);
+        JsonNode json = getObjectNode("""
+                                          {
+                                              "floatField": 10.2,
+                                              "doubleField": 10.2,
+                                              "intField": 10,
+                                              "shortField": 10,
+                                              "stringComparisonStrategy": "CASE_SENSITIVE"
+                                          }
+                                          """);
 
         A a = anvil.validate(json, A.class);
         assertThat(a.floatField).isEqualTo(10.2f);
@@ -66,5 +67,39 @@ class JacksonSimpleTest {
         assertThat(a.intField).isEqualTo(10);
         assertThat(a.shortField).isEqualTo((short) 10);
         assertThat(a.stringComparisonStrategy).isEqualTo(StringComparisonStrategy.CASE_SENSITIVE);
+    }
+
+    @Validate
+    public record Element(
+        @Equal(10.2f)
+        Float floatField
+    ) implements Schema {
+    }
+
+    @Validate
+    public record RecordWithArray(
+        @List(Element.class)
+        java.util.List<Element> elements
+    ) implements Schema {
+    }
+
+    @Test
+    void processRecordWithArray() {
+        Anvil<JsonNode> anvil = new Anvil<>(new JacksonProcessor());
+
+        JsonNode json = getObjectNode("""
+                                          {
+                                              "elements": [
+                                                  { "floatField": 10.2 },
+                                                  { "floatField": 10.2 }
+                                              ]
+                                          }
+                                          """);
+
+        RecordWithArray validated = anvil.validate(json, RecordWithArray.class);
+        assertThat(validated.elements).hasSize(2);
+        for (Element element : validated.elements) {
+            assertThat(element.floatField).isEqualTo(10.2f);
+        }
     }
 }

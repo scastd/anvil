@@ -143,6 +143,85 @@ The `failFast` setting on `@Validate` applies independently to each schema level
 `failFast = true`, validation stops on the first error within that nested schema, but the parent schema's
 `failFast` setting determines whether other fields at the parent level continue to be validated.
 
+### `@List`
+
+Marks a field as containing a list/collection of nested schemas that should be validated independently.
+
+Options:
+
+- `value` - The schema class to use for validating each element in the list. Must be a class annotated with `@Validate`
+  that implements `Schema`.
+
+When a field is annotated with `@List`, the field's value is extracted from the input as a list/collection and each
+element
+is validated using the schema class specified by the annotation's `value`. The validation follows the same rules as
+top-level schema validation, including all field annotations and validation rules defined in the schema class.
+
+```java
+
+@Validate
+public class Tag implements Schema {
+    private String name;
+    private String color;
+}
+
+@Validate
+public class Post implements Schema {
+    private String title;
+
+    @List(Tag.class)
+    private List<Tag> tags;
+}
+```
+
+#### List element validation
+
+Anvil processes list elements recursively. When validating a field annotated with `@List`:
+
+1. The list/collection is extracted from the input.
+2. Each element in the list is validated independently using the same validation pipeline.
+3. All validation rules (annotations, `postBuild()` hooks) are applied to each element.
+4. If validation succeeds for all elements, the validated list is assigned to the field.
+5. If validation fails for any element, errors are collected and prefixed with the element index and field path.
+
+#### Error path building
+
+When list element validation fails, error messages are automatically prefixed with the element index and full field
+path.
+This makes it clear which element and field has the error.
+
+For example, with the following structure:
+
+```java
+
+@Validate
+public class Tag implements Schema {
+    @StrEqual("red")
+    private String color;
+}
+
+@Validate
+public class Post implements Schema {
+    @List(Tag.class)
+    private List<Tag> tags;
+}
+```
+
+If the `color` field in the second tag fails validation, the error message will show the full path:
+
+```
+for field 'tags[1].color': Found value 'blue', but expected equal to: 'red'.
+```
+
+This path building works for any depth of nesting, ensuring that errors always show the complete path
+from the root element to the field with the error, including the list index.
+
+#### Fail-fast behavior
+
+The `failFast` setting on `@Validate` applies independently to each schema level. If a schema used for list elements has
+`failFast = true`, validation stops on the first error within that element, but the parent schema's
+`failFast` setting determines whether other elements in the list continue to be validated.
+
 ## String annotations
 
 All string annotations live under `io.github.anvil.annotations` and are applied to `String` fields.

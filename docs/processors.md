@@ -76,6 +76,8 @@ import io.github.anvil.processor.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class MapProcessor extends Processor<Map<String, Object>> {
     private static final Logger logger = LoggerFactory.getLogger(MapProcessor.class);
 
@@ -96,6 +98,12 @@ public class MapProcessor extends Processor<Map<String, Object>> {
     }
 
     @Override
+    public Map<String, Object> getInnerInput(Map<String, Object> input, String fieldName) {
+        Object value = input.get(fieldName);
+        return value instanceof Map ? (Map<String, Object>) value : null;
+    }
+
+    @Override
     public Logger getLogger() {
         return logger;
     }
@@ -113,4 +121,5 @@ When implementing a custom processor you need to:
 
 - Choose the input type `IN` (e.g. `JsonNode`, `Map<String, Object>`, a custom DTO).
 - Implement how to read booleans, numbers and strings by field name.
+- Implement `getInnerInput` to extract nested objects for fields annotated with `@Inner`.
 - Provide a `Logger` instance.

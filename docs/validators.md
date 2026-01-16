@@ -44,6 +44,7 @@ Anvil ships with validators for all built-in annotations:
     - `LessOrEqualValidator` - Implements `@LessOrEqual`.
     - `InValidator` - Implements `@In`.
     - `InnerValidator` - Implements `@Inner`.
+    - `ListValidator` - Implements `@List`.
 
 You typically do not use these classes directly. Instead, you apply the annotations on your schema and let Anvil
 invoke the corresponding validators.

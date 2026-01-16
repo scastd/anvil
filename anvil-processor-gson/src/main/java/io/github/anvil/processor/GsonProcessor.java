@@ -16,34 +16,39 @@
 
 package io.github.anvil.processor;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * {@link io.github.anvil.processor.Processor} implementation for Gson's {@link JsonObject}.
+ * {@link io.github.anvil.processor.Processor} implementation for Gson's {@link JsonElement}.
  *
  * <p>This processor knows how to extract booleans, numbers, and strings from a {@link JsonObject}
  * so that Anvil can validate and build schema instances from Gson-based JSON inputs.</p>
+ *
+ * <p>The processor handles nested objects and arrays. When extracting nested input via
+ * {@link #getInnerInput(JsonElement, String)}, it returns {@link com.google.gson.JsonArray}
+ * instances for array fields, enabling support for fields annotated with {@link io.github.anvil.annotations.List}.</p>
  */
-public class GsonProcessor extends Processor<JsonObject> {
+public class GsonProcessor extends Processor<JsonElement> {
     private static final Logger logger = LoggerFactory.getLogger(GsonProcessor.class);
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Boolean getBooleanFieldValue(JsonObject input, String fieldName) {
-        return input.get(fieldName).getAsBoolean();
+    public Boolean getBooleanFieldValue(JsonElement input, String fieldName) {
+        return input.getAsJsonObject().get(fieldName).getAsBoolean();
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public Number getNumberFieldValue(JsonObject input, Class<?> numberClass, String fieldName) {
-        JsonElement element = input.get(fieldName);
+    public Number getNumberFieldValue(JsonElement input, Class<?> numberClass, String fieldName) {
+        JsonElement element = input.getAsJsonObject().get(fieldName);
 
         return switch (numberClass.getSimpleName()) {
             case "Integer", "int" -> element.getAsInt();
@@ -60,16 +65,33 @@ public class GsonProcessor extends Processor<JsonObject> {
      * {@inheritDoc}
      */
     @Override
-    public String getStringFieldValue(JsonObject input, String fieldName) {
-        return input.get(fieldName).getAsString();
+    public String getStringFieldValue(JsonElement input, String fieldName) {
+        return input.getAsJsonObject().get(fieldName).getAsString();
     }
 
     /**
-     * {@inheritDoc}
+     * Extracts a nested input representation for a field marked as an inner schema or list.
+     *
+     * <p>This method extracts the field value from the parent {@link JsonObject}. If the field
+     * contains a JSON array, it returns the {@link com.google.gson.JsonArray} directly, which allows
+     * the {@link io.github.anvil.validation.validators.ListValidator} to process list fields
+     * annotated with {@link io.github.anvil.annotations.List}. For nested objects, it returns the
+     * {@link JsonElement} representing the nested structure.</p>
+     *
+     * @param input     the input source (must be a {@link JsonObject}).
+     * @param fieldName the name of the field to read.
+     * @return the nested input representation (JsonArray for arrays, JsonElement for objects),
+     *         or {@code null} if the field is not present.
      */
     @Override
-    public JsonObject getInnerInput(JsonObject input, String fieldName) {
-        return input.getAsJsonObject(fieldName);
+    public JsonElement getInnerInput(JsonElement input, String fieldName) {
+        JsonElement jsonElement = input.getAsJsonObject().get(fieldName);
+
+        if (jsonElement instanceof JsonArray jsonArray) {
+            return jsonArray;
+        }
+
+        return jsonElement;
     }
 
     /**
