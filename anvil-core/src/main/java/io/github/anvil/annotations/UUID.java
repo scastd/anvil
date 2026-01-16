@@ -22,11 +22,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Validates that a {@link String} field is a valid UUID format.
+ * Validates that a string value is a valid UUID format and transforms it into a {@link java.util.UUID} object.
  *
  * <p>The validator checks that the string matches the standard UUID format with hyphens
  * separating the five groups of hexadecimal digits (8-4-4-4-12), for example:
- * "550e8400-e29b-41d4-a716-446655440000".</p>
+ * "550e8400-e29b-41d4-a716-446655440000". If valid, the string is converted to a
+ * {@link java.util.UUID} object and assigned to the field.</p>
+ *
+ * <p>The annotated field should be of type {@link java.util.UUID}.</p>
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

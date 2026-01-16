@@ -32,7 +32,7 @@ Anvil ships with validators for all built-in annotations:
     - `RegexValidator` - Implements `@Regex`.
     - `StrEqualValidator` - Implements `@StrEqual`.
     - `StrInValidator` - Implements `@StrIn`.
-  - `UUIDValidator` - Implements `@UUID`.
+    - `UUIDValidator` - Implements `@UUID`.
 - **Enum**:
     - `EnumValueValidator` - Implements `@EnumValue`.
 - **Numeric**:
@@ -43,7 +43,7 @@ Anvil ships with validators for all built-in annotations:
     - `LessValidator` - Implements `@Less`.
     - `LessOrEqualValidator` - Implements `@LessOrEqual`.
     - `InValidator` - Implements `@In`.
-  - `InnerValidator` - Implements `@Inner`.
+    - `InnerValidator` - Implements `@Inner`.
 
 You typically do not use these classes directly. Instead, you apply the annotations on your schema and let Anvil
 invoke the corresponding validators.

@@ -193,16 +193,17 @@ Options:
 
 ### `@UUID`
 
-Validates that a string is a valid UUID format (e.g., "550e8400-e29b-41d4-a716-446655440000").
+Validates that a string is a valid UUID format and transforms it into a `UUID` object.
 
 ```java
+import java.util.UUID;
 
 @UUID
-private String userId;
+private UUID userId;
 ```
 
 The validator checks that the string matches the standard UUID format with hyphens separating the five groups of
-hexadecimal digits (8-4-4-4-12).
+hexadecimal digits (8-4-4-4-12). If valid, the string is converted to a `java.util.UUID` object and assigned to the field.
 
 ## Enum annotations
 

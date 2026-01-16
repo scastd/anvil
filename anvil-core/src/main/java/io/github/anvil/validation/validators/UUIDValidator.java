@@ -23,17 +23,19 @@ import io.github.anvil.validation.Validator;
 import java.lang.annotation.Annotation;
 
 /**
- * Validator for the {@link UUID} annotation, enforcing that a string value is a valid UUID format.
+ * Validator for the {@link UUID} annotation, enforcing that a string value is a valid UUID format
+ * and transforming it into a {@link java.util.UUID} object.
  */
 public class UUIDValidator implements Validator {
 
     /**
-     * Validates that the given string value is a valid UUID format (e.g., "550e8400-e29b-41d4-a716-446655440000").
+     * Validates that the given string value is a valid UUID format (e.g., "550e8400-e29b-41d4-a716-446655440000")
+     * and transforms it into a {@link java.util.UUID} object.
      *
-     * @param value      the value to validate.
+     * @param value      the value to validate (must be a {@link String}).
      * @param fieldName  the name of the field being validated.
      * @param annotation the {@link UUID} annotation instance.
-     * @return {@code null} if validation succeeds.
+     * @return a {@link java.util.UUID} object if validation succeeds.
      * @throws ValidationError if the value is {@code null} or is not a valid UUID format.
      */
     @Override
@@ -47,14 +49,12 @@ public class UUIDValidator implements Validator {
         String stringValue = (String) value;
 
         try {
-            java.util.UUID.fromString(stringValue);
+            return java.util.UUID.fromString(stringValue);
         } catch (IllegalArgumentException e) {
             throw new ValidationError(
                 "for field '%s': Value '%s' is not a valid UUID format.".formatted(fieldName, stringValue)
             );
         }
-
-        return null;
     }
 
     /**
