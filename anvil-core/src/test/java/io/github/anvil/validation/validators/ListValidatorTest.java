@@ -71,7 +71,7 @@ class ListValidatorTest {
     }
 
     @Test
-    void testValidateSuccessfulValidationWithList() throws ValidationError {
+    void testValidateSuccessfulWithList() throws ValidationError {
         Object element1 = new Object();
         Object element2 = new Object();
         ItemSchema item1 = new ItemSchema();
@@ -219,7 +219,7 @@ class ListValidatorTest {
     @Test
     void testValidateErrorPrefixingWithNonStandardFormat() {
         Object element1 = new Object();
-        Collection<Object> inputList = Arrays.asList(element1);
+        Collection<Object> inputList = java.util.List.of(element1);
         Annotation annotation = getFieldAnnotation(OrderSchema.class, "items", List.class);
         ValidationError error = new ValidationError("Custom error message format");
 
@@ -239,7 +239,7 @@ class ListValidatorTest {
     @Test
     void testValidateErrorPrefixingWithAlreadyPrefixedPath() {
         Object element1 = new Object();
-        Collection<Object> inputList = Arrays.asList(element1);
+        Collection<Object> inputList = java.util.List.of(element1);
         Annotation annotation = getFieldAnnotation(OrderSchema.class, "items", List.class);
         ValidationError error = new ValidationError("for field 'nested.field': Error message");
 
