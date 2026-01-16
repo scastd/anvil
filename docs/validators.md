@@ -32,6 +32,7 @@ Anvil ships with validators for all built-in annotations:
     - `RegexValidator` - Implements `@Regex`.
     - `StrEqualValidator` - Implements `@StrEqual`.
     - `StrInValidator` - Implements `@StrIn`.
+    - `UUIDValidator` - Implements `@UUID`.
 - **Enum**:
     - `EnumValueValidator` - Implements `@EnumValue`.
 - **Numeric**:

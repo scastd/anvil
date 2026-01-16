@@ -21,6 +21,7 @@ import io.github.anvil.validation.validators.OptionalValueValidator;
 import io.github.anvil.validation.validators.RegexValidator;
 import io.github.anvil.validation.validators.StrEqualValidator;
 import io.github.anvil.validation.validators.StrInValidator;
+import io.github.anvil.validation.validators.UUIDValidator;
 import io.github.anvil.validation.validators.numeric.BetweenValidator;
 import io.github.anvil.validation.validators.numeric.EqualValidator;
 import io.github.anvil.validation.validators.numeric.GreaterOrEqualValidator;
@@ -74,7 +75,8 @@ public final class ValidatorRegistry {
             new StrEqualValidator(),
             new StrInValidator(),
             new RegexValidator(),
-            new OptionalValueValidator()
+            new OptionalValueValidator(),
+            new UUIDValidator()
         );
     }
 
