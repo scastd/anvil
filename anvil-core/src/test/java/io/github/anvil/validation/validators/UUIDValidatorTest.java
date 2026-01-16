@@ -42,21 +42,21 @@ class UUIDValidatorTest {
     void testValidateValidUuid() throws ValidationError {
         Annotation annotation = getFieldAnnotation(UuidTestSchema.class, "uuidField", UUID.class);
         Object returnedValue = this.validator.validate("550e8400-e29b-41d4-a716-446655440000", "uuidField", annotation);
-        assertThat(returnedValue).isNull();
+        assertThat(returnedValue).isEqualTo(java.util.UUID.fromString("550e8400-e29b-41d4-a716-446655440000"));
     }
 
     @Test
     void testValidateValidUuidUppercase() throws ValidationError {
         Annotation annotation = getFieldAnnotation(UuidTestSchema.class, "uuidField", UUID.class);
         Object returnedValue = this.validator.validate("550E8400-E29B-41D4-A716-446655440000", "uuidField", annotation);
-        assertThat(returnedValue).isNull();
+        assertThat(returnedValue).isEqualTo(java.util.UUID.fromString("550E8400-E29B-41D4-A716-446655440000"));
     }
 
     @Test
     void testValidateValidUuidMixedCase() throws ValidationError {
         Annotation annotation = getFieldAnnotation(UuidTestSchema.class, "uuidField", UUID.class);
         Object returnedValue = this.validator.validate("550e8400-E29b-41d4-A716-446655440000", "uuidField", annotation);
-        assertThat(returnedValue).isNull();
+        assertThat(returnedValue).isEqualTo(java.util.UUID.fromString("550e8400-E29b-41d4-A716-446655440000"));
     }
 
     @Test
