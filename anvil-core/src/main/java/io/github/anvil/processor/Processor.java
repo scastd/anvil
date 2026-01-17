@@ -39,6 +39,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Base processor that converts an input representation into a validated {@link Schema} instance.
@@ -258,7 +259,7 @@ public abstract class Processor<IN> {
                 return getNumberFieldValue(input, fieldType, fieldName);
             }
 
-            if (fieldType == String.class || fieldType.isEnum()) {
+            if (fieldType == String.class || fieldType == UUID.class || fieldType.isEnum()) {
                 return getStringFieldValue(input, fieldName);
             }
 
