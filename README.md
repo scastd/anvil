@@ -171,31 +171,31 @@ Anvil provides a variety of annotations to define validation rules:
 
 ### Schema Annotations
 
-- @Validate — Marks a class as eligible for validation.
+- `@Validate` — Marks a class as eligible for validation.
 
 ### Field Annotations
 
-- @Inner — Marks a field as a nested schema to be validated.
-- @List — Marks a field as a list of schema elements to be validated.
-- @OptionalValue — Marks a field as optional during validation.
-- @EnumValue — Validates that a field value is a valid constant of the specified Enum type.
+- `@Inner` — Marks a field as a nested schema to be validated.
+- `@List` — Marks a field as a list of schema elements to be validated.
+- `@OptionalValue` — Marks a field as optional during validation.
+- `@EnumValue` — Validates that a field value is a valid constant of the specified Enum type.
 
 ### String Annotations
 
-- @StrIn — Validates that a String field matches one of a predefined set of values.
-- @StrEqual — Validates that a String field equals a specific value.
-- @Regex — Validates that a String field matches a given regular expression.
-- @UUID — Validates that a string value is a valid UUID format and transforms it into a UUID object.
+- `@StrIn` — Validates that a String field matches one of a predefined set of values.
+- `@StrEqual` — Validates that a String field equals a specific value.
+- `@Regex` — Validates that a String field matches a given regular expression.
+- `@UUID` — Validates that a string value is a valid UUID format and transforms it into a UUID object.
 
 ### Numeric Annotations
 
-- @Between — Validates that a numeric field is within a specified range.
-- @Equal — Validates that a numeric field is exactly equal to a configured value.
-- @GreaterOrEqual — Validates that a numeric field is greater than or equal to a configured value.
-- @Greater — Validates that a numeric field is strictly greater than a configured value.
-- @LessOrEqual — Validates that a numeric field is less than or equal to a configured value.
-- @Less — Validates that a numeric field is strictly less than a configured value.
-- @In — Validates that a numeric field is contained in a configured set of values.
+- `@Between` — Validates that a numeric field is within a specified range.
+- `@Equal` — Validates that a numeric field is exactly equal to a configured value.
+- `@GreaterOrEqual` — Validates that a numeric field is greater than or equal to a configured value.
+- `@Greater` — Validates that a numeric field is strictly greater than a configured value.
+- `@LessOrEqual` — Validates that a numeric field is less than or equal to a configured value.
+- `@Less` — Validates that a numeric field is strictly less than a configured value.
+- `@In` — Validates that a numeric field is contained in a configured set of values.
 
 ## Usage Examples
 
