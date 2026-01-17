@@ -282,7 +282,8 @@ private UUID userId;
 ```
 
 The validator checks that the string matches the standard UUID format with hyphens separating the five groups of
-hexadecimal digits (8-4-4-4-12). If valid, the string is converted to a `java.util.UUID` object and assigned to the field.
+hexadecimal digits (8-4-4-4-12). If valid, the string is converted to a `java.util.UUID` object and assigned to the
+field.
 
 ## Enum annotations
 

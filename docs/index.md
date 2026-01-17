@@ -1,6 +1,8 @@
 # AnViL - Annotation Validation Library
 
-**Anvil** is a powerful and type-safe Java validation library for JSON deserialization with annotation-based schema validation. It provides declarative validation rules that ensure your data meets the requirements before it is processed.
+**Anvil** is a powerful and type-safe Java validation library for JSON deserialization with annotation-based schema
+validation. It provides declarative validation rules that ensure your data meets the requirements before it is
+processed.
 
 ## Features
 
@@ -45,14 +47,14 @@ Choose the processor that matches your JSON library!
     <dependency>
         <groupId>io.github.scastd</groupId>
         <artifactId>anvil-core</artifactId>
-        <version>0.0.6</version>
+        <version>0.1.0</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```groovy
-    implementation 'io.github.scastd:anvil-core:0.0.6'
+    implementation 'io.github.scastd:anvil-core:0.1.0'
     ```
 
 ### `anvil-processor-gson`
@@ -63,14 +65,14 @@ Choose the processor that matches your JSON library!
     <dependency>
         <groupId>io.github.scastd</groupId>
         <artifactId>anvil-processor-gson</artifactId>
-        <version>0.0.6</version>
+        <version>0.1.0</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```groovy
-    implementation 'io.github.scastd:anvil-processor-gson:0.0.6'
+    implementation 'io.github.scastd:anvil-processor-gson:0.1.0'
     ```
 
 ### `anvil-processor-jackson`
@@ -81,14 +83,14 @@ Choose the processor that matches your JSON library!
     <dependency>
         <groupId>io.github.scastd</groupId>
         <artifactId>anvil-processor-jackson</artifactId>
-        <version>0.0.6</version>
+        <version>0.1.0</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```groovy
-    implementation 'io.github.scastd:anvil-processor-jackson:0.0.6'
+    implementation 'io.github.scastd:anvil-processor-jackson:0.1.0'
     ```
 
 ### Requirements
@@ -98,6 +100,7 @@ Choose the processor that matches your JSON library!
 ## Quick Start
 
 ```java title="User.java"
+
 @Validate
 public class User implements Schema {
     private String username;
@@ -128,5 +131,17 @@ public class User implements Schema {
 
 !!! note
     This is a simplified example. See the [Getting Started](getting-started.md) guide for full details, including processor configuration and validation workflow.
+
+[//]: # (@formatter:on)
+
+## Documentation
+
+The full Javadocs are available [here](https://javadoc.io/doc/io.github.scastd/anvil-core/latest/index.html).
+
+[//]: # (@formatter:off)
+
+!!! tip
+    If you want to see the Javadoc for any of the processor modules, just change `anvil-core` in the top bar to the
+    desired module name, e.g., `anvil-processor-gson` or `anvil-processor-jackson`.
 
 [//]: # (@formatter:on)

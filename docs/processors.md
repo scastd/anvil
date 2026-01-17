@@ -67,7 +67,8 @@ User user = anvil.validate(json, User.class);
 
 ## Custom processors
 
-If you use a different JSON representation (or want to plug Anvil into another data source), you can create your own processor by extending `Processor<IN>`.
+If you use a different JSON representation (or want to plug Anvil into another data source), you can create your own
+processor by extending `Processor<IN>`.
 
 ```java title="MapProcessor.java"
 import io.github.anvil.Anvil;

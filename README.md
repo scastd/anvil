@@ -4,13 +4,21 @@
   <strong>AnViL</strong>
 </h2>
 
-A powerful and type-safe Java **A**nnotation **V**alidation **L**ibrary for JSON deserialization with annotation-based schema validation. It
-provides declarative validation rules that ensure your data meets the requirements before it is processed.
+A powerful and type-safe Java **A**nnotation **V**alidation **L**ibrary for JSON deserialization with annotation-based
+schema validation. It provides declarative validation rules that ensure your data meets the requirements before
+it is processed.
+
+<div align="center">
 
 [![Main pipeline](https://github.com/scastd/anvil/actions/workflows/1.pipeline.yml/badge.svg)](https://github.com/scastd/anvil/actions/workflows/1.pipeline.yml)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://www.oracle.com/java/)
-[![Maven Central](https://img.shields.io/maven-central/v/io.github/anvil.svg)](https://central.sonatype.com/artifact/io.github/anvil)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue?logo=apache)](LICENSE)
+[![Java 21](https://img.shields.io/badge/Java-21-orange)]()
+<br>
+[![Maven Central](https://img.shields.io/badge/Maven%20Central-anvil--core-b949cd?logo=apachemaven)](https://central.sonatype.com/artifact/io.github.scastd/anvil-core)
+[![Maven Central](https://img.shields.io/badge/Maven%20Central-anvil--processor--gson-b949cd?logo=apachemaven)](https://central.sonatype.com/artifact/io.github.scastd/anvil-processor-gson)
+[![Maven Central](https://img.shields.io/badge/Maven%20Central-anvil--processor--jackson-b949cd?logo=apachemaven)](https://central.sonatype.com/artifact/io.github.scastd/anvil-processor-jackson)
+
+</div>
 
 ## Table of Contents
 
@@ -53,30 +61,33 @@ Add the following dependencies to your `pom.xml`:
 - Core library
 
 ```xml
+
 <dependency>
     <groupId>io.github.scastd</groupId>
     <artifactId>anvil-core</artifactId>
-    <version>0.0.6</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
 - For Gson support
 
 ```xml
+
 <dependency>
     <groupId>io.github.scastd</groupId>
     <artifactId>anvil-processor-gson</artifactId>
-    <version>0.0.6</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
 - For Jackson support
 
 ```xml
+
 <dependency>
     <groupId>io.github.scastd</groupId>
     <artifactId>anvil-processor-jackson</artifactId>
-    <version>0.0.6</version>
+    <version>0.1.0</version>
 </dependency>
 ```
 
@@ -87,19 +98,19 @@ Add the following dependencies to your `build.gradle`:
 - Core library
 
 ```groovy
-implementation 'io.github.scastd:anvil-core:0.0.6'
+implementation 'io.github.scastd:anvil-core:0.1.0'
 ```
 
 - For Gson support
 
 ```groovy
-implementation 'io.github.scastd:anvil-processor-gson:0.0.6'
+implementation 'io.github.scastd:anvil-processor-gson:0.1.0'
 ```
 
 - For Jackson support
 
 ```groovy
-implementation 'io.github.scastd:anvil-processor-jackson:0.0.6'
+implementation 'io.github.scastd:anvil-processor-jackson:0.1.0'
 ```
 
 ### Requirements
@@ -124,7 +135,7 @@ import io.github.anvil.processor.GsonProcessor;
 public class Main {
     @Validate
     public static class User implements Schema {
-        @StrIn({ "admin", "user", "guest" })
+        @StrIn({"admin", "user", "guest"})
         String role;
 
         @Between(min = 18, max = 120)
@@ -156,143 +167,35 @@ public class Main {
 
 ## Annotations
 
+Anvil provides a variety of annotations to define validation rules:
+
 ### Schema Annotations
 
-#### `@Validate`
-
-Applied to a class to enable validation. The class **must** implement `Schema`.
-
-```java
-@Validate(
-    value = true,       // Enable/disable validation (default: true)
-    printInfo = false,  // Print validation info (default: false)
-    failFast = false    // Stop on first error (default: false)
-)
-public class MyClass implements Schema {
-    // fields...
-}
-```
+- @Validate — Marks a class as eligible for validation.
 
 ### Field Annotations
 
-#### `@OptionalValue`
-
-Marks a field as **optional** during validation. By default, fields in a `@Validate`d class are required; annotating a
-field with `@OptionalValue` allows the input to omit that field without producing a validation error.
-
-```java
-String requiredField;
-
-@OptionalValue
-String optionalField;
-```
-
-#### `@EnumValue`
-
-Specifies that a field's value must be one of the values defined in a given enum class.
-
-```java
-@EnumValue(TheEnumClass.class)
-TheEnumClass myEnumField;
-```
+- @Inner — Marks a field as a nested schema to be validated.
+- @List — Marks a field as a list of schema elements to be validated.
+- @OptionalValue — Marks a field as optional during validation.
+- @EnumValue — Validates that a field value is a valid constant of the specified Enum type.
 
 ### String Annotations
 
-#### `@Regex`
-
-Validates that a string field matches a given regular expression.
-
-```java
-@Regex("^[a-zA-Z0-9_]{3,16}$")
-String username;
-```
-
-#### `@StrEqual`
-
-Validates that a string field equals a specific value (case-sensitive by default).
-
-```java
-@StrEqual("ACTIVE")
-String status;
-```
-
-#### `@StrIn`
-
-Validates that a string field is one of the specified values (case-sensitive by default).
-
-```java
-@StrIn({ "PENDING", "ACTIVE", "INACTIVE" })
-String lifecycleState;
-```
+- @StrIn — Validates that a String field matches one of a predefined set of values.
+- @StrEqual — Validates that a String field equals a specific value.
+- @Regex — Validates that a String field matches a given regular expression.
+- @UUID — Validates that a string value is a valid UUID format and transforms it into a UUID object.
 
 ### Numeric Annotations
 
-All numeric annotations live in `io.github.anvil.annotations.numeric` and support common numeric types (`int`, `long`,
-`float`, `double`, and their wrappers). A float or int literal can be used depending on the field type (it is
-automatically cast internally as needed).
-
-#### `@Equal`
-
-Validates that a numeric field equals a specific value.
-
-```java
-@Equal(42.0)
-double answer;
-```
-
-#### `@Between`
-
-Validates that a numeric field is between two values \[min, max).
-
-```java
-@Between(min = 0.0f, max = 100.0f)
-float percentage;
-```
-
-#### `@Greater`
-
-Validates that a numeric field is greater than a specific value.
-
-```java
-@Greater(0.0f)
-float positiveNumber;
-```
-
-#### `@GreaterOrEqual`
-
-Validates that a numeric field is greater than or equal to a specific value.
-
-```java
-@GreaterOrEqual(18.0f)
-float age;
-```
-
-#### `@Less`
-
-Validates that a numeric field is less than a specific value.
-
-```java
-@Less(100.0f)
-float maxScore;
-```
-
-#### `@LessOrEqual`
-
-Validates that a numeric field is less than or equal to a specific value.
-
-```java
-@LessOrEqual(10.0f)
-float rating;
-```
-
-#### `@In`
-
-Validates that a numeric field is one of the specified values.
-
-```java
-@In({ 1.0, 2.0, 3.0 })
-double level;
-```
+- @Between — Validates that a numeric field is within a specified range.
+- @Equal — Validates that a numeric field is exactly equal to a configured value.
+- @GreaterOrEqual — Validates that a numeric field is greater than or equal to a configured value.
+- @Greater — Validates that a numeric field is strictly greater than a configured value.
+- @LessOrEqual — Validates that a numeric field is less than or equal to a configured value.
+- @Less — Validates that a numeric field is strictly less than a configured value.
+- @In — Validates that a numeric field is contained in a configured set of values.
 
 ## Usage Examples
 
@@ -351,6 +254,7 @@ public class CustomProcessor extends Processor<YourInputJsonType> {
 Override `postBuild()` in your schema for custom logic that runs after field values are assigned:
 
 ```java
+
 @Validate
 public class User implements Schema {
     String password;
@@ -371,6 +275,7 @@ public class User implements Schema {
 The `failFast` option in `@Validate` stops validation on the first error when set to `true`:
 
 ```java
+
 @Validate(failFast = true)
 public class MyClass implements Schema {
     // Validation will stop at first error
@@ -382,6 +287,7 @@ public class MyClass implements Schema {
 Enable debug mode to print validation information before the processing starts:
 
 ```java
+
 @Validate(printInfo = true)
 public class MyClass implements Schema {
     // Will print validation info during processing
@@ -395,7 +301,7 @@ Anvil follows a clean, modular architecture:
 ```
 anvil-core       -> Core validation framework and annotations
 ├── Anvil        -> Main validation orchestrator
-├── Schema       -> Base class for validated objects
+├── Schema       -> Base interface for validated objects
 ├── annotations  -> Validation annotations
 └── validation   -> Validator implementations
 
@@ -424,7 +330,7 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 - **Issues**: [GitHub Issues](https://github.com/scastd/anvil/issues)
 - **Email**: scastd00@gmail.com
-- **Documentation**: Check this README and extensive docs [here](https://scastd.github.io/anvil/).
+- **Documentation**: Check the extensive docs [here](https://scastd.github.io/anvil/).
 
 ## Acknowledgments
 
