@@ -47,14 +47,14 @@ Choose the processor that matches your JSON library!
     <dependency>
         <groupId>io.github.scastd</groupId>
         <artifactId>anvil-core</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```groovy
-    implementation 'io.github.scastd:anvil-core:0.1.0'
+    implementation 'io.github.scastd:anvil-core:0.1.1'
     ```
 
 ### `anvil-processor-gson`
@@ -65,14 +65,14 @@ Choose the processor that matches your JSON library!
     <dependency>
         <groupId>io.github.scastd</groupId>
         <artifactId>anvil-processor-gson</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```groovy
-    implementation 'io.github.scastd:anvil-processor-gson:0.1.0'
+    implementation 'io.github.scastd:anvil-processor-gson:0.1.1'
     ```
 
 ### `anvil-processor-jackson`
@@ -83,14 +83,14 @@ Choose the processor that matches your JSON library!
     <dependency>
         <groupId>io.github.scastd</groupId>
         <artifactId>anvil-processor-jackson</artifactId>
-        <version>0.1.0</version>
+        <version>0.1.1</version>
     </dependency>
     ```
 
 === "Gradle"
 
     ```groovy
-    implementation 'io.github.scastd:anvil-processor-jackson:0.1.0'
+    implementation 'io.github.scastd:anvil-processor-jackson:0.1.1'
     ```
 
 ### Requirements

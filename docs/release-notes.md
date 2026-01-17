@@ -1,5 +1,13 @@
 # Release notes
 
+## 0.1.1
+
+_Date: 2026-01-17_
+
+### 🐛 Bug Fixes
+
+* **UUID validation**: incorrect unboxing of JSON element to String in `Processor`.
+
 ## 0.1.0
 
 _Date: 2026-01-17_
