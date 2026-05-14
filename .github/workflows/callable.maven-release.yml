@@ -18,8 +18,7 @@ jobs:
         env:
           TYPE: ${{ inputs.type }}
         run: |
-          valid_types=(major minor patch)
-          if [[ ! ${valid_types[*]} =~ "$TYPE" ]]; then
+          if [[ "$TYPE" != "major" && "$TYPE" != "minor" && "$TYPE" != "patch" ]]; then
             echo "Unknown release type: $TYPE"
             exit 1
           fi
@@ -48,16 +47,16 @@ jobs:
           export major=$(echo "${VERSION}" | cut -d. -f1)
           export minor=$(echo "${VERSION}" | cut -d. -f2)
           export patch=$(echo "${VERSION}" | cut -d. -f3 | cut -d- -f1)
-          echo "Resolved: ${major}.${minor}.${patch}"
+          echo "Resolved from POM: ${major}.${minor}.${patch}"
 
           if [[ "$TYPE" == "major" ]]; then
             echo "new_version=$((major+1)).0.0" >> $GITHUB_ENV
             echo "new_snapshot_version=$((major+1)).0.1-SNAPSHOT" >> $GITHUB_ENV
-          elif [ "$TYPE" == "minor" ]; then
+          elif [[ "$TYPE" == "minor" ]]; then
             echo "new_version=${major}.$((minor+1)).0" >> $GITHUB_ENV
             echo "new_snapshot_version=${major}.$((minor+1)).1-SNAPSHOT" >> $GITHUB_ENV
           else # "$TYPE" == "patch"
-            echo "new_version=${major}.${minor}.$((patch+1))" >> $GITHUB_ENV
+            echo "new_version=${major}.${minor}.${patch}" >> $GITHUB_ENV
             echo "new_snapshot_version=${major}.${minor}.$((patch+1))-SNAPSHOT" >> $GITHUB_ENV
           fi
 
@@ -70,7 +69,8 @@ jobs:
           echo "Current version: ${{ env.current_version }}"
           echo "New version: ${{ env.new_version }}"
           echo "New snapshot version: ${{ env.new_snapshot_version }}"
-          echo "Updating project version..."
+          echo "Updating project version and creating tags..."
+          
           mvn release:prepare -B -s $GITHUB_WORKSPACE/.github/settings/settings.xml \
             -DreleaseVersion=${{ env.new_version }} -DdevelopmentVersion=${{ env.new_snapshot_version }} \
             -Prelease
