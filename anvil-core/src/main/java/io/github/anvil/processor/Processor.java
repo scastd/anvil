@@ -197,17 +197,13 @@ public abstract class Processor<IN> {
     /**
      * Constructs an instance of the given schema class and assigns the provided field values.
      *
-     * @param <OUT>          the schema subtype.
-     * @param clazz          the schema class to instantiate.
-     * @param fieldsToAssign the field values to assign to the instance.
+     * @param <OUT>  the schema subtype.
+     * @param clazz  the schema class to instantiate.
+     * @param fields the field values to assign to the instance.
      * @return the constructed schema instance.
      */
-    private <OUT extends Schema> OUT constructObject(Class<OUT> clazz, Map<Field, Object> fieldsToAssign) {
-        if (clazz.isRecord()) {
-            return createRecordInstance(clazz, fieldsToAssign);
-        }
-
-        return createClassInstance(clazz, fieldsToAssign);
+    private <OUT extends Schema> OUT constructObject(Class<OUT> clazz, Map<Field, Object> fields) {
+        return clazz.isRecord() ? createRecordInstance(clazz, fields) : createClassInstance(clazz, fields);
     }
 
     /**

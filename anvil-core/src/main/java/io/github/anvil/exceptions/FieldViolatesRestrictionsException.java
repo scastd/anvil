@@ -44,9 +44,6 @@ public class FieldViolatesRestrictionsException extends IllegalStateException {
      * @return a comma-separated list of annotation simple names.
      */
     private static String getRestrictionNames(Restriction restriction) {
-        return String.join(
-            ", ",
-            restriction.annotations().stream().map(Class::getSimpleName).toArray(String[]::new)
-        );
+        return String.join(", ",restriction.getAnnotationNames());
     }
 }

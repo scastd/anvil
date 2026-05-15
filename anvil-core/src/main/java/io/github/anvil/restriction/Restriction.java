@@ -37,4 +37,8 @@ public record Restriction(List<Class<? extends Annotation>> annotations) {
     public Restriction(Class<? extends Annotation>... annotations) {
         this(List.of(annotations));
     }
+
+    public List<String> getAnnotationNames() {
+        return this.annotations.stream().map(Class::getSimpleName).toList();
+    }
 }
