@@ -285,6 +285,21 @@ The validator checks that the string matches the standard UUID format with hyphe
 hexadecimal digits (8-4-4-4-12). If valid, the string is converted to a `java.util.UUID` object and assigned to the
 field.
 
+### `@Dated`
+
+Validates that a string value is a valid date or time format that can be parsed into the specified `Temporal` type.
+
+```java
+
+@Dated(Instant.class)
+private Instant timestamp;
+```
+
+Options:
+
+- `value` - The `Temporal` class used to validate and parse the format (supported types: `Instant`, `LocalDate`,
+  `LocalDateTime`, `ZonedDateTime`, and `OffsetDateTime`).
+
 ## Enum annotations
 
 ### `@EnumValue`
