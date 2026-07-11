@@ -35,6 +35,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.RecordComponent;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -255,7 +256,8 @@ public abstract class Processor<IN> {
                 return getNumberFieldValue(input, fieldType, fieldName);
             }
 
-            if (fieldType == String.class || fieldType == UUID.class || fieldType.isEnum()) {
+            if (fieldType == String.class || fieldType == UUID.class || fieldType.isEnum()
+                || Temporal.class.isAssignableFrom(fieldType)) {
                 return getStringFieldValue(input, fieldName);
             }
 

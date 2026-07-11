@@ -16,6 +16,7 @@
 
 package io.github.anvil.validation;
 
+import io.github.anvil.validation.validators.DatedValidator;
 import io.github.anvil.validation.validators.EnumValueValidator;
 import io.github.anvil.validation.validators.OptionalValueValidator;
 import io.github.anvil.validation.validators.RegexValidator;
@@ -76,7 +77,8 @@ public final class ValidatorRegistry {
             new StrInValidator(),
             new RegexValidator(),
             new OptionalValueValidator(),
-            new UUIDValidator()
+            new UUIDValidator(),
+            new DatedValidator()
         );
     }
 

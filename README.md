@@ -186,6 +186,8 @@ Anvil provides a variety of annotations to define validation rules:
 - `@StrEqual` — Validates that a String field equals a specific value.
 - `@Regex` — Validates that a String field matches a given regular expression.
 - `@UUID` — Validates that a string value is a valid UUID format and transforms it into a UUID object.
+- `@Dated` — Validates that a string value is a valid date/time format and transforms it into the corresponding
+  `Temporal` object.
 
 ### Numeric Annotations
 
