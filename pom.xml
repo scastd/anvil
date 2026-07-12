@@ -4,7 +4,7 @@
 
     <groupId>io.github.scastd</groupId>
     <artifactId>anvil</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
+    <version>0.2.0</version>
 
     <packaging>pom</packaging>
     <modules>
@@ -43,7 +43,7 @@
         <url>https://github.com/scastd/anvil</url>
         <connection>scm:git:https://github.com/scastd/anvil.git</connection>
         <developerConnection>scm:git:https://github.com/scastd/anvil.git</developerConnection>
-        <tag>0.0.2</tag>
+        <tag>0.2.0</tag>
     </scm>
 
     <issueManagement>
