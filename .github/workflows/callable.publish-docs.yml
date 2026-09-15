@@ -2,6 +2,7 @@ name: Publish docs (GitHub Pages)
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,6 +13,7 @@ jobs:
   deploy_docs:
     name: Build and Deploy Documentation
     runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_call' || github.ref == 'refs/heads/main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -35,9 +37,9 @@ jobs:
       - name: Build documentation
         run: zensical build --clean
 
-      - uses: actions/upload-pages-artifact@v4
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
-      - uses: actions/deploy-pages@v4
+      - uses: actions/deploy-pages@v5
         id: deployment
